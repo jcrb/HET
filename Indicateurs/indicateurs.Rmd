@@ -1,0 +1,90 @@
+---
+title: "Test des indicateurs HET"
+author: "JcB"
+date: "09/11/2015"
+output: html_document
+---
+
+Indicateurs Champagne Ardennes
+==============================
+
+L'ORUCA a retenu 5 indicateurs:
+
+- HET1: disponibilité en lit (source manuelle ou ROR)
+- HET2: Le nombre de passages aux urgences à J-1
+- HET3: moyenne des durées de passage des patients hospitalisés à partir des urgences J-1
+- HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation / nb de passages) J-1
+- HET5: charge d'occupation à 15 heures / capacité d'accueil du service des urgences (nb de patients pouvant être installés simultanément dans le service en salle d'examen et en zone d'attente organisée)
+
+```{r}
+fichier <- "../../DATA/data_test.Rda"
+load(fichier) # dx
+
+library(lubridate)
+library(xts)
+library(Rpu2)
+
+source("duree_passage.R")
+
+```
+
+Nombre de passages aux urgences (par jour)
+------------------------------------------
+
+```{r}
+n.rpu.jour <- tapply(as.Date(dx$ENTREE), day(as.Date(dx$ENTREE)), length)
+
+# transformation en time serie
+x <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
+ts <- xts(n.rpu.jour, order.by = x)
+head(ts)
+plot(ts)
+```
+
+Graphe avec les WE: on utilise zoo car abline ne fonctionne pas avec xts ?
+
+```{r}
+we <- x[wday(x) %in% c(1,7)]
+plot(zoo(ts))
+abline(v = as.Date(we), lty = 2, col = "red")
+
+```
+
+HET3: moyenne des durées de passage des patients hospitalisés à partir des urgences
+-----------------------------------------------------------------------------------
+
+```{r}
+hosp <- dx[!is.na(dx$MODE_SORTIE) & dx$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
+
+# durée de passage si hospitalisation
+dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3)
+
+# moyenne quotidienne
+mean.dp <- tapply(dp$duree , day(as.Date(dp$ENTREE)), mean)
+
+# transformation en time serie
+ts.mean.dp <- xts(mean.dp, x)
+
+par(mar = c(2,4,2,5))
+plot(ts, ylab = "Nombre de passages")
+par(new=TRUE)
+plot(ts.mean.dp, xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2)
+axis(4)
+mtext("Durée moyenne de passage (mn)",side=4,line=3, col = "blue")
+
+```
+
+HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation / nb de passages)
+-----------------------------------------------------------------------------------------------
+
+```{r}
+n.hosp.jour <- tapply(as.Date(hosp$ENTREE), day(as.Date(hosp$ENTREE)), length)
+tx.hosp <- n.hosp.jour / n.rpu.jour
+ts.tx.hosp <- xts(tx.hosp, x)
+plot(ts.tx.hosp)
+
+```
+
+charge d'occupation à 15 heures / capacité d'accueil du service des urgences 
+----------------------------------------------------------------------------
+
