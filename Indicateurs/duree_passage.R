@@ -51,7 +51,8 @@ df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3){
 #' @usage is.present.at((dp, heure = "15:00:00"))
 #' @param dp dataframe de type duree_passage
 #' @param heure heure au format HH:MM:SS. C'es l'heure à laquelle on veut mesurer les passages
-#' @return np vecteur de boolean: TRUE si présent à l'heure analysee et FALSE sinon
+#' @return np vecteur de boolean: TRUE si présent à l'heure analysee et FALSE sinon. La longueur de np
+#' est égale à celle de dx.
 #' @examples dp <- df.duree.pas(dx)
 #'           dp$present.a.15h <- is.present.at(dp)
 #'           # nombre moyen de patients présents à 15h tous les jours

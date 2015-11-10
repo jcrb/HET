@@ -24,11 +24,11 @@ library(lubridate)
 library(xts)
 library(Rpu2)
 
-source("duree_passage.R")
+source("duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
 
 ```
 
-Nombre de passages aux urgences (par jour)
+HET2 - Nombre de passages aux urgences (par jour)
 ------------------------------------------
 
 ```{r}
@@ -36,16 +36,24 @@ n.rpu.jour <- tapply(as.Date(dx$ENTREE), day(as.Date(dx$ENTREE)), length)
 
 # transformation en time serie
 x <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
-ts <- xts(n.rpu.jour, order.by = x)
-head(ts)
-plot(ts)
+ts.het2 <- xts(n.rpu.jour, order.by = x)
+colnames(ts.het2) <- "HET2"
+
+head(ts.het2)
+plot(ts.het2)
+
+# Répartition normale ?
+summary(n.rpu.jour)
+sd(n.rpu.jour)
+hist(n.rpu.jour)
+
 ```
 
 Graphe avec les WE: on utilise zoo car abline ne fonctionne pas avec xts ?
 
 ```{r}
 we <- x[wday(x) %in% c(1,7)]
-plot(zoo(ts))
+plot(zoo(ts.het2))
 abline(v = as.Date(we), lty = 2, col = "red")
 
 ```
@@ -54,6 +62,7 @@ HET3: moyenne des durées de passage des patients hospitalisés à partir des ur
 -----------------------------------------------------------------------------------
 
 ```{r}
+# sélectionne les enregistrements où le MODE_SORTIE correspond à une hospitalisation 
 hosp <- dx[!is.na(dx$MODE_SORTIE) & dx$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
 
 # durée de passage si hospitalisation
@@ -64,6 +73,7 @@ mean.dp <- tapply(dp$duree , day(as.Date(dp$ENTREE)), mean)
 
 # transformation en time serie
 ts.mean.dp <- xts(mean.dp, x)
+colnames(ts.mean.dp) <- "HET3"
 
 par(mar = c(2,4,2,5))
 plot(ts, ylab = "Nombre de passages")
@@ -81,10 +91,83 @@ HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation /
 n.hosp.jour <- tapply(as.Date(hosp$ENTREE), day(as.Date(hosp$ENTREE)), length)
 tx.hosp <- n.hosp.jour / n.rpu.jour
 ts.tx.hosp <- xts(tx.hosp, x)
+colnames(ts.tx.hosp) <- "HET4"
 plot(ts.tx.hosp)
 
 ```
 
-charge d'occupation à 15 heures / capacité d'accueil du service des urgences 
+HET5 - charge d'occupation à 15 heures / capacité d'accueil du service des urgences 
 ----------------------------------------------------------------------------
+```{r}
+dp$present.a.15h <- is.present.at(dp)
+# nombre moyen de patients présents à 15h tous les jours
+n.p15 <- tapply(dp$present.a.15h, yday(as.Date(dp$ENTREE)), sum)
+
+# Transformation en TS
+ts.n.p15 <- xts(n.p15, x)
+colnames(ts.n.p15) <- "HET5"
+plot(ts.n.p15, main = "Nombre de patients présents au SU à 15 heures")
+
+```
+
+Synthèse
+--------
+
+```{r}
+a <- cbind(ts.het2, ts.mean.dp, ts.tx.hosp, ts.n.p15)
+head(a)
+a[1, ]
+#radial.plot(a[1, ], labels=ion.names,rp.type="p",main="Diagramme indicateurs HET", grid.unit="%",radial.lim=c(0, 5),poly.col="yellow",show.grid.labels=1)
+
+```
+
+Corrélation taux hospitalisation et nombre de passages, et durée de passage
+---------------------------------------------------------------------------
+
+```{r}
+# corrélation entre la durée moyenne de passage quotidienne et le nombre de présents à 15h
+plot(mean.dp, n.p15, main = "Corrélation durée moyenne de passage quotidienne\n et le nombre de présents à 15h", col ="black", pch = 15)
+cor(mean.dp, n.p15)
+y <- lm(mean.dp ~ n.p15)
+y
+summary(y)
+abline(y)
+
+
+# corrélation entre la duréee moyenne de passage et le nombre total de passages
+cor(mean.dp, n.rpu.jour)
+
+# corrélation entre taux hospitalisation et nombre de passages
+cor(tx.hosp, n.rpu.jour)
+y <- lm(n.rpu.jour ~ tx.hosp)
+y
+summary(y)
+plot(tx.hosp, n.rpu.jour, col ="black", pch = 15)
+abline(y)
+```
+
+Radar
+=====
+
+```{r}
+source("../het.R")
+
+a <- cbind(0, ts.het2, ts.mean.dp, ts.tx.hosp, ts.n.p15)
+head(a)
+a[1, ]
+
+# normalisation sous forme de variable centréée et réduite. Par défaut, moyenne et sd sont calculés à partir de l'échantillon de départ.
+m <- 5
+a[, 1] <- m 
+a[, 2] <- m + (a[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
+a[, 3] <- m +  (a[, 3] - mean(mean.dp)) / sd(mean.dp)
+a[, 4] <- m +  (a[, 4] - mean(tx.hosp)) / sd(tx.hosp)
+a[, 5] <- m +  (a[, 5] - mean(n.p15)) / sd(n.p15)
+
+# indicateurs pour le mois d'octobre 2015
+for(i in 1:31){
+    radar.het(a[i,])
+}
+
+```
 
