@@ -20,6 +20,8 @@ L'ORUCA a retenu 5 indicateurs:
 fichier <- "../../DATA/data_test.Rda"
 load(fichier) # dx
 
+dx <- dx[dx$FINESS == "Wis",]
+
 library(lubridate)
 library(xts)
 library(Rpu2)
@@ -158,7 +160,7 @@ a[1, ]
 
 # normalisation sous forme de variable centréée et réduite. Par défaut, moyenne et sd sont calculés à partir de l'échantillon de départ.
 m <- 5
-a[, 1] <- m 
+a[, 1] <- m # arbitraire faute de mieux
 a[, 2] <- m + (a[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
 a[, 3] <- m +  (a[, 3] - mean(mean.dp)) / sd(mean.dp)
 a[, 4] <- m +  (a[, 4] - mean(tx.hosp)) / sd(tx.hosp)
