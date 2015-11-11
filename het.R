@@ -30,3 +30,52 @@ radar.het <- function(vx, seuil = 5, circle  = 9){
                 poly.col=col,
                 show.grid.labels=1)
 }
+
+#' @title créer un DF HET
+#' @description crée un dataframe de type time serie (Xts). Chaque colonne représente un indicateur HET
+#' @usage het.df(dx)
+#' @param dx un dataframe de type RPU
+#' @return un dataframe de type XTS à 5 colonnes: HET1 à HET5. Dans cette version, HET1 est arbitrairement fixé à 0.
+#' Ce dataframe permet de tracer les courbes de variation de chaque indicateur sur la période.
+#' @details nécessite Rpu2, lubridate
+#' @examples xt <- het.df(dx)
+#'           plot(xt[, "HET2"])
+#'           lines(rollmean(xt[, "HET2"], 7), col = "red", lwd = 3)
+#' 
+het.df <- function(dx){
+    # création d'un calendrier pour le période (nécessaire pour transformer en time serie xts)
+    x <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
+    # HET2
+    n.rpu.jour <- tapply(as.Date(dx$ENTREE), day(as.Date(dx$ENTREE)), length)
+    ts.het2 <- xts(n.rpu.jour, order.by = x)
+    colnames(ts.het2) <- "HET2"
+    
+    # HET 3
+    # sélectionne les enregistrements où le MODE_SORTIE correspond à une hospitalisation 
+    hosp <- dx[!is.na(dx$MODE_SORTIE) & dx$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
+    # durée de passage si hospitalisation
+    dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3)
+    # moyenne quotidienne
+    mean.dp <- tapply(dp$duree , day(as.Date(dp$ENTREE)), mean)
+    # transformation en time serie
+    ts.mean.dp <- xts(mean.dp, x)
+    colnames(ts.mean.dp) <- "HET3"
+    
+    # HET 4
+    n.hosp.jour <- tapply(as.Date(hosp$ENTREE), day(as.Date(hosp$ENTREE)), length)
+    tx.hosp <- n.hosp.jour / n.rpu.jour
+    ts.tx.hosp <- xts(tx.hosp, x)
+    colnames(ts.tx.hosp) <- "HET4"
+    
+    # HET 5
+    dp$present.a.15h <- is.present.at(dp)
+    # nombre moyen de patients présents à 15h tous les jours
+    n.p15 <- tapply(dp$present.a.15h, yday(as.Date(dp$ENTREE)), sum)
+    
+    # Transformation en TS
+    ts.n.p15 <- xts(n.p15, x)
+    colnames(ts.n.p15) <- "HET5"
+    
+    a <- cbind(0, ts.het2, ts.mean.dp, ts.tx.hosp, ts.n.p15)
+    return(a)
+}

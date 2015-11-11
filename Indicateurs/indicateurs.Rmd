@@ -2,7 +2,12 @@
 title: "Test des indicateurs HET"
 author: "JcB"
 date: "09/11/2015"
-output: html_document
+output:
+  html_document:
+    number_sections: yes
+  pdf_document:
+    number_sections: yes
+    toc: yes
 ---
 
 Indicateurs Champagne Ardennes
@@ -10,17 +15,21 @@ Indicateurs Champagne Ardennes
 
 L'ORUCA a retenu 5 indicateurs:
 
-- HET1: disponibilité en lit (source manuelle ou ROR)
+- HET1: disponibilité en lit médecine + chir (source manuelle ou ROR)
 - HET2: Le nombre de passages aux urgences à J-1
 - HET3: moyenne des durées de passage des patients hospitalisés à partir des urgences J-1
 - HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation / nb de passages) J-1
 - HET5: charge d'occupation à 15 heures / capacité d'accueil du service des urgences (nb de patients pouvant être installés simultanément dans le service en salle d'examen et en zone d'attente organisée)
 
+Résultats disponobles:
+
+- synthèse régionale du radar de chaque établissement
+- détail du radar avec tableau de données chiffrées pour chaque établissement
+- détail de chaque indicateur pour chaque établissement avec courbe historique des 30 derniers jours (et moyenne lissée)
+
 ```{r}
 fichier <- "../../DATA/data_test.Rda"
 load(fichier) # dx
-
-dx <- dx[dx$FINESS == "Wis",]
 
 library(lubridate)
 library(xts)
@@ -28,6 +37,12 @@ library(Rpu2)
 
 source("duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
 
+
+# masquer cette ligne pour faire le calcul avec tous les établissements
+dx <- dx[dx$FINESS == "Wis",]
+
+# création d'un calendrier pour le période (nécessaire pour transformer en time serie xts)
+x <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
 ```
 
 HET2 - Nombre de passages aux urgences (par jour)
@@ -78,7 +93,7 @@ ts.mean.dp <- xts(mean.dp, x)
 colnames(ts.mean.dp) <- "HET3"
 
 par(mar = c(2,4,2,5))
-plot(ts, ylab = "Nombre de passages")
+plot(ts.het2, ylab = "Nombre de passages")
 par(new=TRUE)
 plot(ts.mean.dp, xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2)
 axis(4)
@@ -158,7 +173,7 @@ a <- cbind(0, ts.het2, ts.mean.dp, ts.tx.hosp, ts.n.p15)
 head(a)
 a[1, ]
 
-# normalisation sous forme de variable centréée et réduite. Par défaut, moyenne et sd sont calculés à partir de l'échantillon de départ.
+# normalisation sous forme de variable centrée et réduite. Par défaut, moyenne et sd sont calculés à partir de l'échantillon de départ.
 m <- 5
 a[, 1] <- m # arbitraire faute de mieux
 a[, 2] <- m + (a[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
@@ -167,9 +182,47 @@ a[, 4] <- m +  (a[, 4] - mean(tx.hosp)) / sd(tx.hosp)
 a[, 5] <- m +  (a[, 5] - mean(n.p15)) / sd(n.p15)
 
 # indicateurs pour le mois d'octobre 2015
-for(i in 1:31){
+for(i in 1:30){
     radar.het(a[i,])
 }
 
+```
+
+Test de la fonction het.fr
+==========================
+
+Cette fonction crée un dataframe de type Xts à partir d'un dataframe RPU en extrayant les indicateurs HET. Au final on obtient un dataframe dont chaque ligne correspond à une date et 5 colonnes correspondant au 5 indicateurs:
+
+```{r}
+xt <- het.df(dx)
+head(xt)
+```
+
+A partir de ce dataframe on peut:
+
+- récupérer la date du jour
+```{r}
+index(head(xt))
+```
+
+- tracer la courbe de tendance pour un indicateur
+```{r}
+plot(xt[, "HET2"])
+lines(rollmean(xt[, "HET2"], 7), col = "red", lwd = 3)
+```
+
+- créer le polygone correspondant après avoir réduit-centré la variable: A FAIRE
+```{r}
+# normalisation sous forme de variable centrée et réduite. Par défaut, moyenne et sd sont calculés à partir de l'échantillon de départ.
+m <- 5
+xt[, 1] <- m # arbitraire faute de mieux
+xt[, 2] <- m + (xt[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
+xt[, 3] <- m +  (xt[, 3] - mean(mean.dp)) / sd(mean.dp)
+xt[, 4] <- m +  (xt[, 4] - mean(tx.hosp)) / sd(tx.hosp)
+xt[, 5] <- m +  (xt[, 5] - mean(n.p15)) / sd(n.p15)
+
+head(xt)
+
+radar.het(xt[1,])
 ```
 
