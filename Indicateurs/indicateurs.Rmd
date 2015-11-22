@@ -15,13 +15,23 @@ Indicateurs Champagne Ardennes
 
 L'ORUCA a retenu 5 indicateurs:
 
-- HET1: disponibilité en lit médecine + chir (source manuelle ou ROR)
-- HET2: Le nombre de passages aux urgences à J-1
+- HET1: disponibilité en lit médecine + chir (source manuelle ou ROR) [FEDORU 4.1]
+- HET2: Le nombre de passages aux urgences à J-1 [FEDORU 2.2]
 - HET3: moyenne des durées de passage des patients hospitalisés à partir des urgences J-1
 - HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation / nb de passages) J-1
 - HET5: charge d'occupation à 15 heures / capacité d'accueil du service des urgences (nb de patients pouvant être installés simultanément dans le service en salle d'examen et en zone d'attente organisée)
 
-Résultats disponobles:
+La FEDORU propose 7 indicateurs:
+
+- FHET1: Nombre de passage sur les dernières 24 heures [2.2 = HET2]
+- FHET2: Nombre de patients présents à un instant donné [2.3] par 10 mn
+- FHET3: Nombre de patients présents de plus de 75 ans [2.4] par 10 mn
+- FHET4: Durée moyenne de présence aux urgences [2.11 = HET3] par 10 mn
+- FHET5: Nombre de transferts par défaut de lits sur les 3 derniers jours [3.6]
+- FHET6: Nombre d'hospitalisations à partir des urgences [3.7 = HET4]
+- FHET7: Nombre de lits disponibles par service [4.1] par 10 mn
+
+Résultats disponibles:
 
 - synthèse régionale du radar de chaque établissement
 - détail du radar avec tableau de données chiffrées pour chaque établissement
@@ -226,3 +236,23 @@ head(xt)
 radar.het(xt[1,])
 ```
 
+
+Indicateurs FEDORU
+======================
+
+FHET2: Nombre de patients présents à un instant donné [2.3] par 10 mn
+
+```{r}
+h1 <- hms("15:00:00")
+inc <- as.period(dhours(1/6))
+i <- h1
+while(i < h1+ as.period(dhours(1))){print(i); i = i + inc}
+
+```
+
+
+- FHET3: Nombre de patients présents de plus de 75 ans [2.4] par 10 mn
+- FHET4: Durée moyenne de présence aux urgences [2.11 = HET3] par 10 mn
+- FHET5: Nombre de transferts par défaut de lits sur les 3 derniers jours [3.6]
+- FHET6: Nombre d'hospitalisations à partir des urgences [3.7 = HET4]
+- FHET7: Nombre de lits disponibles par service [4.1] par 10 mn
