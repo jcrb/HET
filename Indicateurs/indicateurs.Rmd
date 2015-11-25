@@ -3,11 +3,11 @@ title: "Test des indicateurs HET"
 author: "JcB"
 date: "09/11/2015"
 output:
-  html_document:
-    number_sections: yes
   pdf_document:
     number_sections: yes
     toc: yes
+  html_document:
+    number_sections: yes
 ---
 
 Indicateurs Champagne Ardennes
@@ -24,12 +24,12 @@ L'ORUCA a retenu 5 indicateurs:
 La FEDORU propose 7 indicateurs:
 
 - FHET1: Nombre de passage sur les dernières 24 heures [2.2 = HET2]
-- FHET2: Nombre de patients présents à un instant donné [2.3] par 10 mn
+- FHET2: Nombre de patients présents à un instant donné [2.3 = HET5 ?] par 10 mn
 - FHET3: Nombre de patients présents de plus de 75 ans [2.4] par 10 mn
 - FHET4: Durée moyenne de présence aux urgences [2.11 = HET3] par 10 mn
 - FHET5: Nombre de transferts par défaut de lits sur les 3 derniers jours [3.6]
 - FHET6: Nombre d'hospitalisations à partir des urgences [3.7 = HET4]
-- FHET7: Nombre de lits disponibles par service [4.1] par 10 mn
+- FHET7: Nombre de lits disponibles par service [4.1 = HRT1] par 10 mn
 
 Résultats disponibles:
 
@@ -38,7 +38,7 @@ Résultats disponibles:
 - détail de chaque indicateur pour chaque établissement avec courbe historique des 30 derniers jours (et moyenne lissée)
 
 ```{r}
-fichier <- "../../DATA/data_test.Rda"
+fichier <- "../../DATA/data_test.Rda" # supprimer ../ en mode console
 load(fichier) # dx
 
 library(lubridate)
@@ -67,7 +67,11 @@ ts.het2 <- xts(n.rpu.jour, order.by = x)
 colnames(ts.het2) <- "HET2"
 
 head(ts.het2)
-plot(ts.het2)
+plot(ts.het2, main = "Nombre quotidien de passages", type = "b", pch = 21, bg = "yellow")
+
+abline(h = mean(ts.het2), lty = 2, col = "red") # moyenne
+lines(rollmean(ts.het2, k = 7), col = "green", lwd = 3)
+
 
 # Répartition normale ?
 summary(n.rpu.jour)
