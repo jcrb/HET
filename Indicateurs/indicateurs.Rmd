@@ -3,11 +3,12 @@ title: "Test des indicateurs HET"
 author: "JcB"
 date: "09/11/2015"
 output:
+  html_document:
+    keep_md: yes
+    number_sections: yes
   pdf_document:
     number_sections: yes
     toc: yes
-  html_document:
-    number_sections: yes
 ---
 
 Indicateurs Champagne Ardennes
@@ -107,11 +108,11 @@ ts.mean.dp <- xts(mean.dp, x)
 colnames(ts.mean.dp) <- "HET3"
 
 par(mar = c(2,4,2,5))
-plot(ts.het2, ylab = "Nombre de passages")
+plot(ts.het2, ylab = "Nombre de passages", main = "Nombre de passages et durée de passage")
 par(new=TRUE)
 plot(ts.mean.dp, xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2)
 axis(4)
-mtext("Durée moyenne de passage (mn)",side=4,line=3, col = "blue")
+mtext("HET3 - Durée moyenne de passage avant hospitalisation (mn)",side=4,line=3, col = "blue")
 
 ```
 
@@ -123,8 +124,16 @@ n.hosp.jour <- tapply(as.Date(hosp$ENTREE), day(as.Date(hosp$ENTREE)), length)
 tx.hosp <- n.hosp.jour / n.rpu.jour
 ts.tx.hosp <- xts(tx.hosp, x)
 colnames(ts.tx.hosp) <- "HET4"
-plot(ts.tx.hosp)
-
+plot(ts.tx.hosp, main = "HET4 - Taux d'hospitalisation", ylab = "%")
+abline(h = mean(ts.tx.hosp), col = "red")
+sd1 <- mean(ts.tx.hosp) + sd(ts.tx.hosp)
+sd2 <- mean(ts.tx.hosp) + sd(ts.tx.hosp) * 2
+sd3 <- mean(ts.tx.hosp) + sd(ts.tx.hosp) * 3
+abline(h = sd1, col = "green")
+abline(h = sd2, col = "orange")
+abline(h = sd3, col = "red")
+lines(rollmean(ts.tx.hosp, 7), col = "blue", lwd = 2)
+legend("bottomright", legend = c("moyenne générale", "moyenne lissée",  "1 SD", "2 SD", "3 SD"), col = c("red","blue","green","orange", "red"), lty = 1, lwd = 2, cex = 0.8)
 ```
 
 HET5 - charge d'occupation à 15 heures / capacité d'accueil du service des urgences 
@@ -246,11 +255,14 @@ Indicateurs FEDORU
 
 FHET2: Nombre de patients présents à un instant donné [2.3] par 10 mn
 
-```{r}
+```{r, message=FALSE}
 h1 <- hms("15:00:00")
 inc <- as.period(dhours(1/6))
 i <- h1
-while(i < h1+ as.period(dhours(1))){print(i); i = i + inc}
+while(i < h1+ as.period(dhours(8))){
+    print(c(i, sum(is.present.at(dp, i))))
+    i = i + inc
+    }
 
 ```
 
