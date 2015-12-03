@@ -167,7 +167,7 @@ colnames(ts.mean.dp) <- "HET3"
 par(mar = c(2,4,2,5))
 plot(ts.het2, ylab = "Nombre de passages", main = "Nombre de passages et durée de passage")
 par(new=TRUE)
-plot(ts.mean.dp, xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2)
+plot(zoo(ts.mean.dp), xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2, col = "blue")
 axis(4)
 mtext("HET3 - Durée moyenne de passage avant hospitalisation (mn)",side=4,line=3, col = "blue")
 ```

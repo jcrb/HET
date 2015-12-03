@@ -1,0 +1,89 @@
+---
+title: "HET ALSACE"
+author: "JcB"
+date: "03/12/2015"
+output:
+  html_document:
+    number_sections: yes
+---
+
+```{r init, echo=FALSE, warning=FALSE}
+library(lubridate)
+library(xts)
+library(Rpu2)
+
+source("duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
+```
+
+
+Introduction
+============
+
+La réunion du 3/12/2015 à l'ARS à fixé les indicateurs devant être suivis pendant la période 2015-2016:
+
+- AHET1: nombre de passages la veille
+- AHET2: nombre de passages de patients de plus de 75 ans
+- AHET3: durée de passage
+- AHET4: taux d'hospitalisation
+- AHET5: charge d'occupation à 15 heures
+
+Définitions:
+------------
+- __Taux d'hospitalisation__: somme MODE_SORTIE = 'Mutation' +  MODE_SORTIE = 'Transfert' / nombre de RPU où le MODE_SORTIE est renseigné.
+- __charge d'occupation à 15 heures__: nombre de patients présents à 15 heures / nombre de places d'hébergement de la SU (nb de patients pouvant être installés simultanément dans le service en salle d'examen et en zone d'attente organisée)
+
+Définitions des seuils
+----------------------
+
+Les seuils sont calculés à partir de l'historique des données des huits premiers mois de 2015 et des deux derniers mois de 2014.
+Pour chaque indicateurs sont calculés la moyenne et l'écart-type par établissement.
+
+Cinq items du RPU sont nécessaires: AGE, DATE_ENTREE, DATE_SORTIE, MODE_SORTIE, FINESS
+
+### Constitution du panel de référence pour le calcul des seuils:
+```{r, echo=FALSE, eval=FALSE}
+load("~/Documents/Resural/Stat Resural/RPU_2014/rpu2014d0112_c2.Rda")
+load("~/Documents/Resural/Stat Resural/RPU_2014/rpu2015d0112_provisoire.Rda")
+dx <- rbind(d14[as.Date(d14$ENTREE) > "2014-10-31", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")], d15[as.Date(d15$ENTREE) < "2015-11-01", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")])
+# fusion HTP et NHC dans HUS
+dx$FINESS <- as.character(dx$FINESS)
+dx$FINESS[dx$FINESS == "HTP"] <- "Hus"
+dx$FINESS[dx$FINESS == "NHC"] <- "Hus"
+# fusion EMR et HSR dans Mul
+dx$FINESS[dx$FINESS == "Emr"] <- "Mul"
+dx$FINESS[dx$FINESS == "Hsr"] <- "Mul"
+dx$FINESS <- as.factor(dx$FINESS)
+
+save(dx, file = "HET Alsace 2015/panel_reference.Rda")
+```
+
+Le panel de référence comporte 501.499 RPU (1/11/2014 au 31/10/2015)
+
+### Calcul des moyennes et écart-types (SD)
+```{r}
+# nombre total de passages
+het1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
+het1.m <- apply(het1.n, 2, mean, na.rm = TRUE)
+het1.sd <- apply(het1.n, 2, sd, na.rm = TRUE)
+
+# Nombre de passages de 75 ans et plus
+# on crée un sous groupe des 75 ans et plus
+dx.75 <- dx[dx$AGE > 74,]
+het2.n <- tapply(as.Date(dx.75$ENTREE), list(as.Date(dx.75$ENTREE), dx.75$FINESS), length)
+het2.m <- apply(het2.n, 2, mean, na.rm = TRUE)
+het2.sd <- apply(het2.n, 2, sd, na.rm = TRUE)
+
+# HET2 - Durée de passage
+# on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
+dp <- df.duree.pas(dx, orientation = FALSE, finess = TRUE)
+head(dp)
+het3.m <- tapply(as.Date(dp$duree), dp$FINESS, mean, na.rm=TRUE)
+het3.sd <- tapply(as.Date(dp$duree), dp$FINESS, sd, na.rm=TRUE)
+
+# HET4 - Taux hospitalisation
+# On forme un Dataframe de RPU dont le mode de sortie n'est pas nul: certains sont mal formés: 6 = Domicile, 7 = transfert, 8 = mutation 
+ms <- dx[!is.na(dx$MODE_SORTIE),]
+summary(ms$MODE_SORTIE)
+
+```
+

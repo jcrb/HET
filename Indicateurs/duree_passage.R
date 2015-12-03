@@ -21,11 +21,22 @@
 #' @param unit unité de temps. Défaut = mins
 #' @param mintime défaut = 0. Durée de passage minimale
 #' @param maxtime défaut = 3 (72 heures). Durée de passage maximale
+#' @param orientation boolean. Default = TRUE, la colonne ORIENTATION est prise en compte
+#' @param finess boolean. Default = FALSE, la colonne FINESS n'est pas prise en compte
 #' @return dataframe de type duree_passage
 #' @examples df <- df.duree.pas(dx)
 
-df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3){
-    pas <- dx[, c("ENTREE", "SORTIE", "MODE_SORTIE", "ORIENTATION", "AGE")]
+df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3, orientation = TRUE, finess = FALSE){
+    
+    if(orientation == TRUE)
+        pas <- dx[, c("ENTREE", "SORTIE", "MODE_SORTIE", "ORIENTATION", "AGE")]
+    else if(orientation == FALSE)
+        pas <- dx[, c("ENTREE", "SORTIE", "MODE_SORTIE", "AGE")]
+    
+    if(finess == TRUE){
+        FINESS <- dx$FINESS
+        pas <- cbind(pas, FINESS)
+    }
     
     # on ne conserve que les couples complets
     pas2 <- pas[complete.cases(pas[, c("ENTREE", "SORTIE")]),]
