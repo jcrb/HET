@@ -12,7 +12,7 @@ library(lubridate)
 library(xts)
 library(Rpu2)
 
-source("duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
+source("../Indicateurs/duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
 ```
 
 
@@ -54,6 +54,14 @@ dx$FINESS[dx$FINESS == "Emr"] <- "Mul"
 dx$FINESS[dx$FINESS == "Hsr"] <- "Mul"
 dx$FINESS <- as.factor(dx$FINESS)
 
+# Correction du MODE_SORTIE. Certains codes sont mal transcodés. 6 = Domicile, 7 = transfert, 8 = mutation 
+dx$MODE_SORTIE <- as.character(dx$MODE_SORTIE)
+dx$MODE_SORTIE[dx$MODE_SORTIE == 6] <- "Domicile"
+dx$MODE_SORTIE[dx$MODE_SORTIE == 7] <- "Transfert"
+dx$MODE_SORTIE[dx$MODE_SORTIE == 8] <- "Mutation"
+dx$MODE_SORTIE <- as.factor(dx$MODE_SORTIE)
+
+# Sauvegarde
 save(dx, file = "HET Alsace 2015/panel_reference.Rda")
 ```
 
@@ -62,28 +70,84 @@ Le panel de référence comporte 501.499 RPU (1/11/2014 au 31/10/2015)
 ### Calcul des moyennes et écart-types (SD)
 ```{r}
 # nombre total de passages
+# ------------------------
+
 het1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
 het1.m <- apply(het1.n, 2, mean, na.rm = TRUE)
 het1.sd <- apply(het1.n, 2, sd, na.rm = TRUE)
 
 # Nombre de passages de 75 ans et plus
+# --------------------------------------
+
 # on crée un sous groupe des 75 ans et plus
 dx.75 <- dx[dx$AGE > 74,]
 het2.n <- tapply(as.Date(dx.75$ENTREE), list(as.Date(dx.75$ENTREE), dx.75$FINESS), length)
 het2.m <- apply(het2.n, 2, mean, na.rm = TRUE)
 het2.sd <- apply(het2.n, 2, sd, na.rm = TRUE)
 
-# HET2 - Durée de passage
+# HET3 - Durée de passage
+# -----------------------
+
 # on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
 dp <- df.duree.pas(dx, orientation = FALSE, finess = TRUE)
 head(dp)
-het3.m <- tapply(as.Date(dp$duree), dp$FINESS, mean, na.rm=TRUE)
-het3.sd <- tapply(as.Date(dp$duree), dp$FINESS, sd, na.rm=TRUE)
+# durée de passage par jour et par Finess
+het3.n <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), length)
+
+het3.m <- apply(het3.n, 2, mean, na.rm=TRUE)
+het3.sd <- apply(het3.n, 2, sd, na.rm=TRUE)
 
 # HET4 - Taux hospitalisation
+# ---------------------------
+
 # On forme un Dataframe de RPU dont le mode de sortie n'est pas nul: certains sont mal formés: 6 = Domicile, 7 = transfert, 8 = mutation 
 ms <- dx[!is.na(dx$MODE_SORTIE),]
 summary(ms$MODE_SORTIE)
 
+# taux d'hospitalisation par FINESS. dx est un vecteur des modes de sortie (non nuls) pour un établissement donné. 
+tx.hosp <- function(dx){s = summary(dx);n = length(dx); hosp = s["Mutation"] + s["Transfert"]; tx = hosp/n; return(tx)}
+
+# taux d'hospitalisation par établissement sur tute la période
+t <- tapply(ms$MODE_SORTIE, ms$FINESS, tx.hosp)
+round(t * 100, 2)
+
+# taux d'hospitalisation par jour et par Finess
+t <- tapply(ms$MODE_SORTIE, list(as.Date(ms$ENTREE), ms$FINESS), tx.hosp)
+head(round(t * 100, 2))
+
+# indicateur
+het4.m <- apply(t, 2, mean, na.rm = TRUE)
+het4.sd <- apply(t, 2, sd, na.rm = TRUE)
+
+
+# AHET5: charge d'occupation à 15 heures
+# --------------------------------------
+
+# on utilise dp (voir HET3)
+# on crée une colonne supplémentaire de boolean
+dp$present.a.15h <- is.present.at(dp)
+# nb de patients présents à 15h par jour et par Finess
+n.p15 <- tapply(dp$present.a.15h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
+head(n.p15)
+
+# nombre moyen et SD de patients présents à 15 heures
+het5.m <- apply(n.p15, 2, mean, na.rm = TRUE)
+het5.sd <- apply(n.p15, 2, sd, na.rm = TRUE)
+
+# Représentation graphique
+boxplot(n.p15, las = 2, main = "Nombre de patients présents à 15h", ylab = "patients")
+
+
+# Rroupment des indicapeurs: on forme une matrice des indicateurs moyens et des Finess
+tab.m <- cbind(het1.m, het2.m, het3.m, het4.m, het5.m)
+round(tab.m,2)
+
+tab.sd <- cbind(het1.sd, het2.sd, het3.sd, het4.sd, het5.sd)
+round(tab.sd,2)
+
 ```
+
+
+
+
 
