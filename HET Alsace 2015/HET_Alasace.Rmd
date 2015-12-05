@@ -13,6 +13,7 @@ library(xts)
 library(Rpu2)
 
 source("../Indicateurs/duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
+source("../het.R")
 ```
 
 
@@ -68,8 +69,13 @@ save(dx, file = "HET Alsace 2015/panel_reference.Rda")
 Le panel de référence comporte 501.499 RPU (1/11/2014 au 31/10/2015)
 
 ### Calcul des moyennes et écart-types (SD)
+
+```{r, echo=FALSE}
+load("panel_reference.Rda")
+```
+
 ```{r}
-# nombre total de passages
+# HET1 - nombre total de passages
 # ------------------------
 
 het1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
@@ -100,12 +106,15 @@ het3.sd <- apply(het3.n, 2, sd, na.rm=TRUE)
 # HET4 - Taux hospitalisation
 # ---------------------------
 
-# On forme un Dataframe de RPU dont le mode de sortie n'est pas nul: certains sont mal formés: 6 = Domicile, 7 = transfert, 8 = mutation 
+# On forme un Dataframe de RPU dont le mode de sortie n'est pas nul, appemé ms:
 ms <- dx[!is.na(dx$MODE_SORTIE),]
 summary(ms$MODE_SORTIE)
 
 # taux d'hospitalisation par FINESS. dx est un vecteur des modes de sortie (non nuls) pour un établissement donné. 
-tx.hosp <- function(dx){s = summary(dx);n = length(dx); hosp = s["Mutation"] + s["Transfert"]; tx = hosp/n; return(tx)}
+# tx.hosp <- function(dx){s = summary(dx);n = length(dx); hosp = s["Mutation"] + s["Transfert"]; tx = hosp/n; return(tx)}
+
+# taux de transferts par FINESS
+tx.trans <- function(dx){s = summary(dx);n = length(dx); trans = s["Transfert"]; tx = trans/n; return(tx)}
 
 # taux d'hospitalisation par établissement sur tute la période
 t <- tapply(ms$MODE_SORTIE, ms$FINESS, tx.hosp)
@@ -118,6 +127,11 @@ head(round(t * 100, 2))
 # indicateur
 het4.m <- apply(t, 2, mean, na.rm = TRUE)
 het4.sd <- apply(t, 2, sd, na.rm = TRUE)
+
+# HET4.2 - taux de transferts
+t <- tapply(ms$MODE_SORTIE, ms$FINESS, tx.trans)
+round(t * 100, 2)
+
 
 
 # AHET5: charge d'occupation à 15 heures
@@ -137,14 +151,25 @@ het5.sd <- apply(n.p15, 2, sd, na.rm = TRUE)
 # Représentation graphique
 boxplot(n.p15, las = 2, main = "Nombre de patients présents à 15h", ylab = "patients")
 
+# Nombre de patients présents à 19 heures et corrélation avec 15 heures
+dp$present.a.19h <- is.present.at(dp, "19:00:00")
+n.p19 <- tapply(dp$present.a.19h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
+apply(n.p19, 2, mean, na.rm = TRUE)
+het5.19 <- apply(n.p19, 2, mean, na.rm = TRUE)
+cor(het5.m, het5.19)
+plot(het5.m, het5.19)
 
-# Rroupment des indicapeurs: on forme une matrice des indicateurs moyens et des Finess
+
+# Regroupment des indicapeurs: on forme une matrice des indicateurs moyens et des Finess
+# -------------------------------------------------------------------------------------------------
 tab.m <- cbind(het1.m, het2.m, het3.m, het4.m, het5.m)
 round(tab.m,2)
 
 tab.sd <- cbind(het1.sd, het2.sd, het3.sd, het4.sd, het5.sd)
 round(tab.sd,2)
 
+save(tab.m, file = "het_mean.csv")
+save(tab.sd, file = "het_sd.csv")
 ```
 
 

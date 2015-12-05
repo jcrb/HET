@@ -1,4 +1,8 @@
-
+#======================================================================================================
+#
+#
+#
+#======================================================================================================
 #' @title radar des indicateurs HET
 #' @description affichage des indicateurs HET à partir d'une matrice
 #' @usage
@@ -31,6 +35,11 @@ radar.het <- function(vx, seuil = 5, circle  = 9){
                 show.grid.labels=1)
 }
 
+#======================================================================================================
+#
+#
+#
+#======================================================================================================
 #' @title créer un DF HET
 #' @description crée un dataframe de type time serie (Xts). Chaque colonne représente un indicateur HET
 #' @usage het.df(dx)
@@ -77,5 +86,45 @@ het.df <- function(dx){
     colnames(ts.n.p15) <- "HET5"
     
     a <- cbind(0, ts.het2, ts.mean.dp, ts.tx.hosp, ts.n.p15)
+    return(a)
+}
+
+#======================================================================================================
+#
+#       tx.hosp
+#
+#======================================================================================================
+# taux d'hospitalisation 
+#' @param vx est un vecteur des modes de sortie (non nuls) pour un établissement donné.
+#' 
+tx.hosp <- function(vx){
+    s = summary(as.factor(vx))
+    n = length(vx)
+    hosp = sum(s["Mutation"], s["Transfert"], na.rm = TRUE)
+    tx = hosp/n
+    return(tx)}
+
+#======================================================================================================
+#
+#       indicateurs.jour
+#
+#======================================================================================================
+#' 
+#' @param dx dataframe des données du jour pour un finess donné
+#' @examples data <- dx[as.Date(dx$ENTREE) == "2015-12-01" & dx$FINESS = "Hus",]
+#'           indicateurs.jour(data)
+#' 
+indicateurs.jour <- function(dx){
+    het1 <- nrow(dx)
+    het2 <- length(dx$AGE[dx$AGE > 74])
+    # on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
+    dp <- df.duree.pas(dx, orientation = FALSE, finess = TRUE)
+    het3 <- mean(dp$duree, na.rm = TRUE)
+    # On forme un Dataframe de RPU dont le mode de sortie n'est pas nul, appemé ms:
+    ms <- dx[!is.na(dx$MODE_SORTIE),]
+    het4 <- tx.hosp(ms$MODE_SORTIE)
+    het5 <- sum(is.present.at(dp))
+    a <- c(het1, het2, het3, het4, het5)
+    names(a) <- c("HET1","HET2","HET3","HET4","HET5")
     return(a)
 }
