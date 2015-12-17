@@ -167,6 +167,7 @@ colnames(ts.mean.dp) <- "HET3"
 par(mar = c(2,4,2,5))
 plot(ts.het2, ylab = "Nombre de passages", main = "Nombre de passages et durée de passage")
 par(new=TRUE)
+# l'objet xts est transformé en zoo qui accepte la couleur
 plot(zoo(ts.mean.dp), xaxt="n",xlab="",ylab="", main = "", yaxt="n", lty = 2, col = "blue")
 axis(4)
 mtext("HET3 - Durée moyenne de passage avant hospitalisation (mn)",side=4,line=3, col = "blue")
@@ -406,7 +407,7 @@ m <- 5
 a[, 1] <- m # arbitraire faute de mieux
 a[, 2] <- m + (a[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
 a[, 3] <- m +  (a[, 3] - mean(mean.dp)) / sd(mean.dp)
-a[, 4] <- m +  (a[, 4] - mean(tx.hosp)) / sd(tx.hosp)
+a[, 4] <- m +  (a[, 4] - mean(ts.tx.hosp)) / sd(ts.tx.hosp)
 a[, 5] <- m +  (a[, 5] - mean(n.p15)) / sd(n.p15)
 
 # indicateurs pour le mois d'octobre 2015
@@ -468,7 +469,7 @@ m <- 5
 xt[, 1] <- m # arbitraire faute de mieux
 xt[, 2] <- m + (xt[, 2] - mean(n.rpu.jour)) / sd(n.rpu.jour)
 xt[, 3] <- m +  (xt[, 3] - mean(mean.dp)) / sd(mean.dp)
-xt[, 4] <- m +  (xt[, 4] - mean(tx.hosp)) / sd(tx.hosp)
+xt[, 4] <- m +  (xt[, 4] - mean(ts.tx.hosp)) / sd(ts.tx.hosp)
 xt[, 5] <- m +  (xt[, 5] - mean(n.p15)) / sd(n.p15)
 
 head(xt)
