@@ -1,3 +1,8 @@
+#===================================================
+#
+#   df.duree.pas
+#
+#===================================================
 # Routines pour Durée de passage
 
 # nombre de patients présents à une heure précide. Par exemple combien de patients sont présents à 15 heures?
@@ -57,6 +62,11 @@ df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3, orientatio
     
 }
 
+#===================================================
+#
+#   is.present.at
+#
+#===================================================
 #' @title Un patient est-il présent à une heure donnée ?
 #' @description Crée le vecteur des personnes présentes à une heure donnée
 #' @usage is.present.at((dp, heure = "15:00:00"))

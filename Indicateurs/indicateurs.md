@@ -36,39 +36,9 @@ load(fichier) # dx
 
 library(lubridate)
 library(xts)
-```
-
-```
-## Loading required package: zoo
-## 
-## Attaching package: 'zoo'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric
-```
-
-```r
 library(Rpu2)
-```
 
-```
-## Loading required package: xtable
-## Loading required package: openintro
-## Please visit openintro.org for free statistics materials
-## 
-## Attaching package: 'openintro'
-## 
-## The following object is masked from 'package:datasets':
-## 
-##     cars
-## 
-## Loading required package: plotrix
-```
-
-```r
 source("duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
-
 
 # masquer cette ligne pour faire le calcul avec tous les établissements
 dx <- dx[dx$FINESS == "Wis",]
@@ -417,6 +387,63 @@ for(i in 1:30){
 ```
 
 ![](indicateurs_files/figure-html/unnamed-chunk-9-1.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-2.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-3.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-4.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-5.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-6.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-7.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-8.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-9.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-10.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-11.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-12.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-13.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-14.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-15.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-16.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-17.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-18.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-19.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-20.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-21.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-22.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-23.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-24.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-25.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-26.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-27.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-28.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-29.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-30.png) 
+
+Calcul des moyennes de référence par établissement
+===================================================
+
+La période de référence retenue s'étend du 1er novembre 2014 au 31 octobre 2015
+```{}
+load("~/Documents/Stat Resural/RPU_2014/rpu2014d0112_c2.Rda")
+load("~/Documents/Stat Resural/RPU_2014/rpu2015d0112_provisoire.Rda")
+d1 <- d14[as.Date(d14$ENTREE) > "2014-10-31",]
+d2 <- d15[as.Date(d15$ENTREE) < "2015-11-01",]
+# combinaison de d1 et d2 crée la période de référence
+ref <- rbind(d1, d2)
+
+# HET2
+# ====
+# Nombre de RPU par jours et par FINESS pendant la période de référence
+ref.het2.n <- tapply(as.Date(ref$ENTREE), list(yday(as.Date(ref$ENTREE)), ref$FINESS), length)
+# calcul de la moyenne/sd du nb de RPU par jours et par FINESS
+ref.het2.m <- apply(ref.het2.n, 2, mean, na.rm = TRUE)
+ref.het2.sd <- apply(ref.het2.n, 2, sd, na.rm = TRUE)
+
+# HET3
+# ====
+# sélectionne les enregistrements où le MODE_SORTIE correspond à une hospitalisation 
+hosp <- ref[!is.na(ref$MODE_SORTIE) & ref$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
+# durée de passage si hospitalisation
+dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3, finess = TRUE)
+
+# moyenne/sd par FINESS
+ref.het3.m <- tapply(dp$duree , dp$FINESS, mean, na.rm = TRUE)
+ref.het3.sd <- tapply(dp$duree , dp$FINESS, sd, na.rm = TRUE)
+
+# HET4
+# ====
+n.hosp.jour <- tapply(as.Date(hosp$ENTREE), list(yday(as.Date(hosp$ENTREE)), hosp$FINESS), length)
+tx.hosp <- n.hosp.jour / ref.het2.n
+# moyenne/sd par FINESS
+ref.het4.m <- apply(tx.hosp, 2, mean, na.rm = TRUE)
+ref.het4.sd <- apply(tx.hosp, 2, sd, na.rm = TRUE)
+
+# HET5
+# ====
+dp$present.a.15h <- is.present.at(dp) # vecteur de TRUE/FALSE
+# nombre de patients présents à 15h tous les jours par FINESS
+n.p15 <- tapply(dp$present.a.15h, yday(as.Date(dp$ENTREE)), sum)
+# moyenne/sd par FINESS
+ref.het5.m <- apply(n.p15, 2, mean, na.rm = TRUE)
+ref.het5.sd <- apply(n.p15, 2, sd, na.rm = TRUE)
+
+# Synthèse
+ref.df <- cbind(ref.het2.m, ref.het2.sd, ref.het3.m, ref.het3.sd, ref.het4.m, ref.het4.sd, ref.het5.m, ref.het5.sd)
+
+# Sauvegarde
+write.csv(ref.df, file = "ref_het_2015.csv")
+
+```
+Note: les taux d'hospitalisation pourles HUS sont anormalement bas. Du à défauut de remplissage de la rubrique Mode_Sortie. Corrigé en Décembre 2015 (par défaut, mode de sortie = domicile).
 
 Test de la fonction het.fr
 ==========================

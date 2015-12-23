@@ -11,7 +11,7 @@
 #' @param circle nombre de cercles
 #' @examples
 #' 
-radar.het <- function(vx, seuil = 5, circle  = 9){
+radar.het <- function(vx, seuil = 5, circle  = 9, date = ""){
     b <- vx
     m <- max(b)
     col = "green"
@@ -23,7 +23,10 @@ radar.het <- function(vx, seuil = 5, circle  = 9){
         col = "red"
     
     het.names<-c("HET1","HET2", "HET3", "HET4", "HET5")
-    jour <- index(b)[1]
+    if(class(vx) == "xts")
+        jour <- index(b)[1]
+    else
+        jour <- date
     
     radial.plot(vx, 
                 labels=het.names,
