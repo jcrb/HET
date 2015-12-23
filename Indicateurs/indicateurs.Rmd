@@ -278,7 +278,20 @@ Données du jour:
 ```{r}
 # données du 9/12/2015
 jour <- "2015-12-09"
-d <- d15[as.Date(d15$ENTREE) == jour,]
+
+# création d'un fichier du jour
+# d <- d15[as.Date(d15$ENTREE) == jour,]
+# write.csv(d, file = "rpu_du_jour.csv")
+
+d <- read.csv("../rpu_du_jour.csv")
+
+# lecture du fichier de référence des moyennes et ecarts-type
+ref.df <- read.csv("../ref_het_2015.csv")
+# on retire Hus et Mul
+ref.df <- ref.df[-c(9:10),]
+# triage par ordre alphabétique de la 1ere colonne
+ref.df <- ref.df[with(ref.df, order(X)),]
+
 
 # HET2: nb de RPU par Finess
 h2 <- table(d$FINESS)
@@ -317,9 +330,18 @@ a
 na2zero <- function(x){ifelse(is.na(x), 0, x)}
 b <- na2zero(a)
 
-for(i in 1:20){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
+# on supprime Hus et Mul
+# b <-b[-c(9:10),]
 
+```
 
+Affichage HET du jour
+---------------------
+```{r het_JOUR, echo=FALSE}
+# affichage en deux fois
+par(mfrow = c(3, 3), mar = c(1, 1, 1, 0))
+for(i in 1:9){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
+for(i in 10:18){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
 ```
 
 

@@ -31,11 +31,13 @@ radar.het <- function(vx, seuil = 5, circle  = 9, date = ""){
     radial.plot(vx, 
                 labels=het.names,
                 rp.type="p", 
-                main= paste0(jour, " - Diagramme indicateurs HET"), 
+                main = jour, # paste0(jour, " - Diagramme indicateurs HET"), 
                 grid.unit="",
                 radial.lim=c(0, circle),
+                boxed.radial = FALSE,
                 poly.col=col,
                 show.grid.labels=1)
+                par(cex.axis = 0.6, cex.lab = 0.6)
 }
 
 #======================================================================================================
