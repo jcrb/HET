@@ -294,7 +294,7 @@ ref.df <- ref.df[with(ref.df, order(X)),]
 
 
 # HET2: nb de RPU par Finess
-h2 <- table(d$FINESS)
+h2 <- table(factor(d$FINESS))
 # indicateur pour la journée
 het2 <- 5 + (h2 - ref.df[,"ref.het2.m"]) / ref.df[,"ref.het2.sd"]
 
