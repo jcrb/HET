@@ -37,7 +37,7 @@ f <- levels(factor(dx$FINESS))
 f <- f[-4] # CCOM
 
 
-jour <- "2016-01-20"
+jour <- "2016-01-28"
 ```
 
 HET1 (nombre de passages)

@@ -76,6 +76,12 @@ Le panel de référence comporte 501.499 RPU (1/11/2014 au 31/10/2015)
 load("panel_reference.Rda")
 ```
 
+Calcul des indicateurs
+=======================
+
+ahet1 - nombre total de passages
+---------------------------------
+
 ```{r}
 # ahet1 - nombre total de passages
 # ------------------------
@@ -83,7 +89,12 @@ load("panel_reference.Rda")
 ahet1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
 ahet1.m <- apply(ahet1.n, 2, mean, na.rm = TRUE)
 ahet1.sd <- apply(ahet1.n, 2, sd, na.rm = TRUE)
+```
 
+
+ahet2 - Nombre de passages de 75 ans et plus
+--------------------------------------------
+```{r}
 # Nombre de passages de 75 ans et plus
 # --------------------------------------
 
@@ -92,7 +103,14 @@ dx.75 <- dx[dx$AGE > 74,]
 ahet2.n <- tapply(as.Date(dx.75$ENTREE), list(as.Date(dx.75$ENTREE), dx.75$FINESS), length)
 ahet2.m <- apply(ahet2.n, 2, mean, na.rm = TRUE)
 ahet2.sd <- apply(ahet2.n, 2, sd, na.rm = TRUE)
+```
 
+ahet3 - Durée de passage
+------------------------
+
+On crée un dataframe des durées de passage (Rpu2). Avec tapply, on détermine la durée moyenne de passages par jour et par FINESS. Sur le même principe, on peut calculer une matrice des SD, Median, Min, Max...
+On applique _apply_ aux colonnes pour calculer la moyenne et SD annuelle par établissement.
+```{r}
 # ahet3 - Durée de passage
 # -----------------------
 
@@ -108,6 +126,9 @@ ahet3.sd <- apply(ahet3.moy.jour, 2, sd, na.rm=TRUE)
 
 # Pour illustrer:
 boxplot(ahet3.moy.jour, las = 2, main = "Durées moyenne de passage")
+```
+
+```{r}
 
 
 # ahet4 - Taux hospitalisation
