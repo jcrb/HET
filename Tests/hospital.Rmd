@@ -1,0 +1,158 @@
+---
+title: "Hôpîtaux HET"
+author: "JcB"
+date: "31/01/2016"
+output: html_document
+---
+
+```{r global_option, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, width = 80, size = "small")
+```
+
+
+Récupération des données
+```{r, message = FALSE}
+library(Rpu2)
+library(lubridate)
+source('~/Documents/Resural/Stat Resural/HET/het.R')
+
+mean.ref <- read.csv("../HET Alsace 2015/het_mean.csv")
+mean.ref <- mean.ref[order(mean.ref$X),]
+rownames(mean.ref) <- mean.ref$X
+mean.ref <- mean.ref[, -1] 
+names(mean.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
+
+sd.ref <- read.csv("../HET Alsace 2015/het_sd.csv")
+sd.ref <- sd.ref[order(sd.ref$X),]
+rownames(sd.ref) <- sd.ref$X
+sd.ref <- sd.ref[, -1]
+names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
+
+load("../../RPU_2016/Data/d16_p.Rda")
+dx <- d16.p
+
+# calendrier
+cal <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
+f <- levels(factor(dx$FINESS))
+f <- f[-4] # CCOM
+
+
+jour <- "2016-01-20"
+```
+
+HET1 (nombre de passages)
+-------------------------
+
+```{r}
+a <- NULL
+for(i in 1:length(f)){a[i] = het2(dx, f[i], jour)}
+HET1 <- a
+HET1
+```
+
+HET2 (nombre de personnes de 75 ans ou plus)
+--------------------------------------------
+```{r}
+a <- NULL
+for(i in 1:length(f)){a[i] = ahet2(dx, f[i], jour)}
+HET2 <- a
+HET2
+```
+
+HET3 (durée moyenne de passage)
+-------------------------------
+```{r}
+indicateur <- "ahet3"
+
+a <- NULL
+for(i in 1:length(f)){
+#     # plante si une date est manquante
+#     z <- unique(as.Date(dx$ENTREE[dx$FINESS == f[i]]))
+#     # liste des dates manquantes
+#     date.manquante <- NULL
+#     if(setequal(cal, z) == FALSE)
+#         date.manquante <- as.Date(setdiff(cal, z), origin = "1970-01-01")
+
+#     if(cal[i] %in% date.manquante)
+#         a[i] <- 0
+#     else
+        a[i] = het3(dx, f[i], jour)
+    }
+HET3 <- a
+HET3
+```
+
+HET4 (Taux d'hospitalisation)
+-----------------------------
+
+```{r}
+indicateur <- "ahet4"
+
+a <- NULL
+for(i in 1:length(f)){a[i] = het4(dx, f[i], jour)}
+HET4 <- a
+HET4
+```
+
+HET5 (charge de soins)
+----------------------
+
+```{r}
+# charge de soins par jour
+indicateur <- "ahet5"
+
+a <- NULL
+for(i in 1:length(f)){
+    # plante si une date est manquante
+    z <- unique(as.Date(dx$ENTREE[dx$FINESS == f[i]]))
+    # liste des dates manquantes
+    date.manquante <- NULL
+    if(setequal(cal, z) == FALSE)
+        date.manquante <- as.Date(setdiff(cal, z), origin = "1970-01-01")
+
+    if(cal[i] %in% date.manquante)
+        a[i] <- 0
+    else
+        a[i] = het5(dx, f[i], jour)
+    }
+HET5 <- a
+HET5
+```
+
+Synthèse de la journée du `r jour`
+----------------------------------
+
+Les fichiers de référence ont trop de lignes. Supprimer Ccm, Mul et Hus.
+```{r}
+m <- mean.ref[-c(4, 13, 14),]
+sd <- sd.ref[-c(4, 13, 14),]
+m
+```
+
+
+```{r}
+a <- cbind(HET1, HET2, HET3, HET4, HET5)
+rownames(a) <- f
+a
+
+d <- 5 + (a - m)/sd
+d
+```
+
+Radar HET
+------------
+```{r}
+# remplace NA par 5
+d[is.na(d)] <- 5
+
+pdf(file = paste0("graphes/date_", jour, ".pdf"))
+# # affichage en deux fois
+par(mfrow = c(3, 3), mar = c(1, 1, 1, 0))
+for(i in 1:9){j = paste(row.names(d)[i], jour); radar.het(d[i,], date = j)}
+for(i in 10:17){j = paste(row.names(d)[i], jour); radar.het(d[i,], date = j)}
+par(mfrow = c(1, 1), mar = c(1, 1, 1, 0))
+dev.off()
+```
+
+
+

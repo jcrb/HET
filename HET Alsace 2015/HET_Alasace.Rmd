@@ -13,7 +13,7 @@ library(xts)
 library(Rpu2)
 
 source("../Indicateurs/duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
-source("../het.R")
+source("../het.R") # si console: source("het.R")
 ```
 
 
@@ -22,11 +22,11 @@ Introduction
 
 La réunion du 3/12/2015 à l'ARS à fixé les indicateurs devant être suivis pendant la période 2015-2016:
 
-- AHET1: nombre de passages la veille
-- AHET2: nombre de passages de patients de plus de 75 ans
-- AHET3: durée de passage
-- AHET4: taux d'hospitalisation
-- AHET5: charge d'occupation à 15 heures
+- ahet1: nombre de passages la veille
+- ahet2: nombre de passages de patients de plus de 75 ans
+- ahet3: durée de passage
+- ahet4: taux d'hospitalisation
+- ahet5: charge d'occupation à 15 heures
 
 Définitions:
 ------------
@@ -43,17 +43,19 @@ Cinq items du RPU sont nécessaires: AGE, DATE_ENTREE, DATE_SORTIE, MODE_SORTIE,
 
 ### Constitution du panel de référence pour le calcul des seuils:
 ```{r, echo=FALSE, eval=FALSE}
-load("~/Documents/Resural/Stat Resural/RPU_2014/rpu2014d0112_c2.Rda")
-load("~/Documents/Resural/Stat Resural/RPU_2014/rpu2015d0112_provisoire.Rda")
+load("~/Documents/Resural/Stat Resural/DATA/RPU_2014/rpu2014d0112_c2.Rda")
+load("~/Documents/Resural/Stat Resural/DATA/RPU_2015/rpu2015d0112.Rda")
+
 dx <- rbind(d14[as.Date(d14$ENTREE) > "2014-10-31", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")], d15[as.Date(d15$ENTREE) < "2015-11-01", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")])
+
 # fusion HTP et NHC dans HUS
-dx$FINESS <- as.character(dx$FINESS)
-dx$FINESS[dx$FINESS == "HTP"] <- "Hus"
-dx$FINESS[dx$FINESS == "NHC"] <- "Hus"
+# dx$FINESS <- as.character(dx$FINESS)
+# dx$FINESS[dx$FINESS == "HTP"] <- "Hus"
+# dx$FINESS[dx$FINESS == "NHC"] <- "Hus"
 # fusion EMR et HSR dans Mul
-dx$FINESS[dx$FINESS == "Emr"] <- "Mul"
-dx$FINESS[dx$FINESS == "Hsr"] <- "Mul"
-dx$FINESS <- as.factor(dx$FINESS)
+# dx$FINESS[dx$FINESS == "Emr"] <- "Mul"
+# dx$FINESS[dx$FINESS == "Hsr"] <- "Mul"
+# dx$FINESS <- as.factor(dx$FINESS)
 
 # Correction du MODE_SORTIE. Certains codes sont mal transcodés. 6 = Domicile, 7 = transfert, 8 = mutation 
 dx$MODE_SORTIE <- as.character(dx$MODE_SORTIE)
@@ -63,7 +65,7 @@ dx$MODE_SORTIE[dx$MODE_SORTIE == 8] <- "Mutation"
 dx$MODE_SORTIE <- as.factor(dx$MODE_SORTIE)
 
 # Sauvegarde
-save(dx, file = "HET Alsace 2015/panel_reference.Rda")
+save(dx, file = "panel_reference.Rda")
 ```
 
 Le panel de référence comporte 501.499 RPU (1/11/2014 au 31/10/2015)
@@ -75,35 +77,40 @@ load("panel_reference.Rda")
 ```
 
 ```{r}
-# HET1 - nombre total de passages
+# ahet1 - nombre total de passages
 # ------------------------
 
-het1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
-het1.m <- apply(het1.n, 2, mean, na.rm = TRUE)
-het1.sd <- apply(het1.n, 2, sd, na.rm = TRUE)
+ahet1.n <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
+ahet1.m <- apply(ahet1.n, 2, mean, na.rm = TRUE)
+ahet1.sd <- apply(ahet1.n, 2, sd, na.rm = TRUE)
 
 # Nombre de passages de 75 ans et plus
 # --------------------------------------
 
 # on crée un sous groupe des 75 ans et plus
 dx.75 <- dx[dx$AGE > 74,]
-het2.n <- tapply(as.Date(dx.75$ENTREE), list(as.Date(dx.75$ENTREE), dx.75$FINESS), length)
-het2.m <- apply(het2.n, 2, mean, na.rm = TRUE)
-het2.sd <- apply(het2.n, 2, sd, na.rm = TRUE)
+ahet2.n <- tapply(as.Date(dx.75$ENTREE), list(as.Date(dx.75$ENTREE), dx.75$FINESS), length)
+ahet2.m <- apply(ahet2.n, 2, mean, na.rm = TRUE)
+ahet2.sd <- apply(ahet2.n, 2, sd, na.rm = TRUE)
 
-# HET3 - Durée de passage
+# ahet3 - Durée de passage
 # -----------------------
 
 # on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
+
 dp <- df.duree.pas(dx, orientation = FALSE, finess = TRUE)
 head(dp)
-# durée de passage par jour et par Finess
-het3.n <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), length)
+# durée de passage moyenne par jour et par Finess
+ahet3.moy.jour <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), mean, na.rm = TRUE)
 
-het3.m <- apply(het3.n, 2, mean, na.rm=TRUE)
-het3.sd <- apply(het3.n, 2, sd, na.rm=TRUE)
+ahet3.m <- apply(ahet3.moy.jour, 2, mean, na.rm=TRUE)
+ahet3.sd <- apply(ahet3.moy.jour, 2, sd, na.rm=TRUE)
 
-# HET4 - Taux hospitalisation
+# Pour illustrer:
+boxplot(ahet3.moy.jour, las = 2, main = "Durées moyenne de passage")
+
+
+# ahet4 - Taux hospitalisation
 # ---------------------------
 
 # On forme un Dataframe de RPU dont le mode de sortie n'est pas nul, appemé ms:
@@ -125,19 +132,19 @@ t <- tapply(ms$MODE_SORTIE, list(as.Date(ms$ENTREE), ms$FINESS), tx.hosp)
 head(round(t * 100, 2))
 
 # indicateur
-het4.m <- apply(t, 2, mean, na.rm = TRUE)
-het4.sd <- apply(t, 2, sd, na.rm = TRUE)
+ahet4.m <- apply(t, 2, mean, na.rm = TRUE)
+ahet4.sd <- apply(t, 2, sd, na.rm = TRUE)
 
-# HET4.2 - taux de transferts
+# ahet4.2 - taux de transferts
 t <- tapply(ms$MODE_SORTIE, ms$FINESS, tx.trans)
 round(t * 100, 2)
 
 
 
-# AHET5: charge d'occupation à 15 heures
+# Aahet5: charge d'occupation à 15 heures
 # --------------------------------------
 
-# on utilise dp (voir HET3)
+# on utilise dp (voir ahet3)
 # on crée une colonne supplémentaire de boolean
 dp$present.a.15h <- is.present.at(dp)
 # nb de patients présents à 15h par jour et par Finess
@@ -145,8 +152,8 @@ n.p15 <- tapply(dp$present.a.15h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
 head(n.p15)
 
 # nombre moyen et SD de patients présents à 15 heures
-het5.m <- apply(n.p15, 2, mean, na.rm = TRUE)
-het5.sd <- apply(n.p15, 2, sd, na.rm = TRUE)
+ahet5.m <- apply(n.p15, 2, mean, na.rm = TRUE)
+ahet5.sd <- apply(n.p15, 2, sd, na.rm = TRUE)
 
 # Représentation graphique
 boxplot(n.p15, las = 2, main = "Nombre de patients présents à 15h", ylab = "patients")
@@ -155,21 +162,21 @@ boxplot(n.p15, las = 2, main = "Nombre de patients présents à 15h", ylab = "pa
 dp$present.a.19h <- is.present.at(dp, "19:00:00")
 n.p19 <- tapply(dp$present.a.19h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
 apply(n.p19, 2, mean, na.rm = TRUE)
-het5.19 <- apply(n.p19, 2, mean, na.rm = TRUE)
-cor(het5.m, het5.19)
-plot(het5.m, het5.19)
+ahet5.19 <- apply(n.p19, 2, mean, na.rm = TRUE)
+cor(ahet5.m, ahet5.19)
+plot(ahet5.m, ahet5.19)
 
 
 # Regroupment des indicapeurs: on forme une matrice des indicateurs moyens et des Finess
 # -------------------------------------------------------------------------------------------------
-tab.m <- cbind(het1.m, het2.m, het3.m, het4.m, het5.m)
+tab.m <- cbind(ahet1.m, ahet2.m, ahet3.m, ahet4.m, ahet5.m)
 round(tab.m,2)
 
-tab.sd <- cbind(het1.sd, het2.sd, het3.sd, het4.sd, het5.sd)
+tab.sd <- cbind(ahet1.sd, ahet2.sd, ahet3.sd, ahet4.sd, ahet5.sd)
 round(tab.sd,2)
 
-save(tab.m, file = "het_mean.csv")
-save(tab.sd, file = "het_sd.csv")
+write.csv(tab.m, file = "het_mean.csv")
+write.csv(tab.sd, file = "het_sd.csv")
 ```
 
 

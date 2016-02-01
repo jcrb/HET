@@ -46,7 +46,7 @@ df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3, orientatio
     # on ne conserve que les couples complets
     pas2 <- pas[complete.cases(pas[, c("ENTREE", "SORTIE")]),]
     
-    # calcul de la rurée de passage
+    # calcul de la durée de passage
     e <- ymd_hms(pas2$ENTREE)
     s <- ymd_hms(pas2$SORTIE)
     pas2$duree <- as.numeric(difftime(s, e, units = unit))

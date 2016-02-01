@@ -274,24 +274,42 @@ Récupération des données:
 
 - moyenne des passages: ref.df["FINESS", "indicateur"] ex. ref.df["3Fr","ref.het2.m"]
 
-Données du jour:
-```{r}
+Indicateurs du jour
+===================
+
+Démarche générale
+------------------
+
+Pour calculer les indicateurs du jour, il faut deux informations:
+
+- un dataframe avec les RPU du jour
+- les moyennes et ecarts-type de chaque indicateur
+
+La procédure qui suit  est formalisée dabns la routine __indicateurs.jour__.
+
+Récupère les données 2016:
+    
+```{r, echo=FALSE}
+load("../../RPU_2016/Data/d16_p.Rda")
+dx <- d16.p
+
 # données du 9/12/2015
-jour <- "2015-12-09"
+jour <- "2016-01-10"
 
 # création d'un fichier du jour
 # d <- d15[as.Date(d15$ENTREE) == jour,]
 # write.csv(d, file = "rpu_du_jour.csv")
+# d <- read.csv("../rpu_du_jour.csv")
 
-d <- read.csv("../rpu_du_jour.csv")
+d <- dx[as.Date(dx$ENTREE) == jour & !(dx$FINESS %in% c("Hus","Mul","Ccm")),]
+d$FINESS <- factor(d$FINESS)
 
 # lecture du fichier de référence des moyennes et ecarts-type
 ref.df <- read.csv("../ref_het_2015.csv")
-# on retire Hus et Mul
-ref.df <- ref.df[-c(9:10),]
+# on retire Hus et Mul et le ccm
+ref.df <- ref.df[-c(9:10,20),]
 # triage par ordre alphabétique de la 1ere colonne
 ref.df <- ref.df[with(ref.df, order(X)),]
-
 
 # HET2: nb de RPU par Finess
 h2 <- table(factor(d$FINESS))
@@ -304,6 +322,7 @@ hosp <- d[!is.na(d$MODE_SORTIE) & d$MODE_SORTIE %in% c("Mutation", "Transfert"),
 # durée de passage moyenne si hospitalisation par Finess
 dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3, finess = TRUE)
 h3 <- tapply(dp$duree, dp$FINESS, mean, na.rm = TRUE)
+
 # indicateur pour la journée
 het3 <- 5 + (h3 - ref.df[,"ref.het3.m"]) / ref.df[,"ref.het3.sd"]
 
@@ -317,7 +336,12 @@ het4 <- 5 + (h4 - ref.df[,"ref.het4.m"]) / ref.df[,"ref.het4.sd"]
 
 # HET5: Charge de soins à 15 heures
 dp$present.a.15h <- is.present.at(dp) # vecteur de TRUE/FALSE
-h5 <- tapply(dp$present.a.15h, dp$FINESS, sum)
+h5 <- tapply(dp$present.a.15h, factor(dp$FINESS), sum)
+```
+
+```{r}
+
+
 # indicateur pour la journée
 het5 <- 5 + (h5 - ref.df[,"ref.het5.m"]) / ref.df[,"ref.het5.sd"]
 
@@ -327,7 +351,7 @@ a <- cbind(het1, het2, het3, het4, het5)
 a
 
 # transformation des NA en 0
-na2zero <- function(x){ifelse(is.na(x), 0, x)}
+
 b <- na2zero(a)
 
 # on supprime Hus et Mul
@@ -343,6 +367,80 @@ par(mfrow = c(3, 3), mar = c(1, 1, 1, 0))
 for(i in 1:9){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
 for(i in 10:18){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
 ```
+
+Utilisation de la routine indicateurs.jour
+------------------------------------------
+
+Récupère les données 2016:
+```{r, echo=FALSE}
+load("../../RPU_2016/Data/d16_p.Rda")
+dx <- d16.p
+```
+
+Indicateurs pour Sélestat le 10/1/2016:
+```{r}
+# source('~/Documents/Resural/Stat Resural/HET/het.R')
+finess <- "Sel"
+jour <- as.Date("2016-01-10")
+
+```
+
+Indicateurs du jour
+```{r}
+data <- dx[as.Date(dx$ENTREE) == jour & dx$FINESS == finess,]
+het.jour <- indicateurs.jour(data)
+het.jour
+```
+
+
+Récupération des moyennes et sd:
+```{r}
+# lecture du fichier de référence des moyennes et ecarts-type
+ref.df <- read.csv("../ref_het_2015.csv")
+# on retire Hus et Mul
+ref.df <- ref.df[-c(9:10),]
+# triage par ordre alphabétique de la 1ere colonne
+ref.df <- ref.df[with(ref.df, order(X)),]
+# on met comme nom de ligne le contenu de la colonne X, ce qui permet de désigner une ligne par le FINESS de l'établissement.
+rownames(ref.df) <- ref.df$X
+
+```
+
+Indicateurs normalisés:
+```{r}
+het1 <- 5
+het2 <- 5 + (het.jour["HET2"] - ref.df["Sel","ref.het2.m"]) / ref.df["Sel","ref.het2.sd"]
+het3 <- 5 + (het.jour["HET3"] - ref.df["Sel","ref.het3.m"]) / ref.df["Sel","ref.het3.sd"]
+het4 <- 5 + (het.jour["HET4"] - ref.df["Sel","ref.het4.m"]) / ref.df["Sel","ref.het4.sd"]
+het5 <- 5 + (het.jour["HET5"] - ref.df["Sel","ref.het5.m"]) / ref.df["Sel","ref.het5.sd"]
+a <- cbind(het1, het2, het3, het4, het5)
+a
+```
+
+Graphique
+```{r, echo=FALSE}
+radar.het(a, date = paste(finess, "-", format(jour, "%d/%m/%Y")))
+
+```
+
+Utilisation de la routine  indicateurs.ca.jour
+----------------------------------------------
+
+Meilleure solution. Calcule les indicateurs normalisés et dessine le graphe à partir de 4 éléments:
+
+- un dataframe RPU
+- une date
+- un FINESS
+- le fichier des moyennes et SD de référence
+```{r}
+# source('~/Documents/Resural/Stat Resural/HET/het.R')
+finess <- "Sel"
+jour <- as.Date("2016-01-10")
+a <- indicateurs.ca.jour(dx, finess, jour, "../ref_het_2015.csv")
+a
+radar.het(a, date = paste(finess, "-", format(jour, "%d/%m/%Y")))
+```
+
 
 
 Test de la fonction het.fr
