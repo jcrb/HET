@@ -79,7 +79,7 @@ abline(h = mean(ts.het2), lty = 2, col = "red") # moyenne
 lines(rollmean(ts.het2, k = 7), col = "green", lwd = 3)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-2-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-2-1.png)
 
 ```r
 # Répartition normale ?
@@ -103,7 +103,7 @@ sd(n.rpu.jour)
 hist(n.rpu.jour)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-2-2.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-2-2.png)
 
 Graphe avec les WE: on utilise zoo car abline ne fonctionne pas avec xts ?
 
@@ -114,7 +114,7 @@ plot(zoo(ts.het2))
 abline(v = as.Date(we), lty = 2, col = "red")
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-3-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-3-1.png)
 
 HET3: moyenne des durées de passage des patients hospitalisés à partir des urgences
 -----------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ axis(4)
 mtext("HET3 - Durée moyenne de passage avant hospitalisation (mn)",side=4,line=3, col = "blue")
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-4-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-4-1.png)
 
 HET4: taux d'hospitalisation après passage aux urgences (nb d'hospitalisation / nb de passages)
 -----------------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ lines(rollmean(ts.tx.hosp, 7), col = "blue", lwd = 2)
 legend("bottomright", legend = c("moyenne générale", "moyenne lissée",  "1 SD", "2 SD", "3 SD"), col = c("red","blue","green","orange", "red"), lty = 1, lwd = 2, cex = 0.8)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-5-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-5-1.png)
 
 HET5 - charge d'occupation à 15 heures / capacité d'accueil du service des urgences 
 ----------------------------------------------------------------------------
@@ -182,7 +182,7 @@ colnames(ts.n.p15) <- "HET5"
 plot(ts.n.p15, main = "Nombre de patients présents au SU à 15 heures")
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-6-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-6-1.png)
 
 Synthèse
 --------
@@ -274,7 +274,7 @@ summary(y)
 abline(y)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-8-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-8-1.png)
 
 ```r
 # corrélation entre la duréee moyenne de passage et le nombre total de passages
@@ -339,7 +339,7 @@ plot(tx.hosp, n.rpu.jour, col ="black", pch = 15)
 abline(y)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-8-2.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-8-2.png)
 
 Radar
 =====
@@ -390,210 +390,208 @@ for(i in 1:30){
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
+
+## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
+## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
+
+![](indicateurs_files/figure-html/unnamed-chunk-9-1.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-2.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-2.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-3.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-3.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-4.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-4.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-5.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-5.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-6.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-6.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-7.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-7.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-8.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-8.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-9.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-9.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-10.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-10.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-11.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-11.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-12.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-12.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-13.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-13.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-14.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-14.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-15.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-15.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-16.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-16.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-17.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-17.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-18.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-18.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-19.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-19.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-20.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-20.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-21.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-21.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-22.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-22.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-23.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-23.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-24.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-24.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-25.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-25.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-26.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-26.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-27.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-27.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-28.png)
 
 ```
 ## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-9-28.png) 
-
-```
-## Warning in if (class(vx) == "xts") jour <- index(b)[1] else jour <- date:
-## la condition a une longueur > 1 et seul le premier élément est utilisé
-```
-
-![](indicateurs_files/figure-html/unnamed-chunk-9-29.png) ![](indicateurs_files/figure-html/unnamed-chunk-9-30.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-9-29.png)![](indicateurs_files/figure-html/unnamed-chunk-9-30.png)
 
 Calcul des moyennes de référence par établissement
 ===================================================
@@ -657,28 +655,30 @@ Récupération des données:
 
 - moyenne des passages: ref.df["FINESS", "indicateur"] ex. ref.df["3Fr","ref.het2.m"]
 
-Données du jour:
+Indicateurs du jour
+===================
 
-```r
-# données du 9/12/2015
-jour <- "2015-12-09"
+Démarche générale
+------------------
 
-# création d'un fichier du jour
-# d <- d15[as.Date(d15$ENTREE) == jour,]
-# write.csv(d, file = "rpu_du_jour.csv")
+Pour calculer les indicateurs du jour, il faut deux informations:
 
-d <- read.csv("../rpu_du_jour.csv")
+- un dataframe avec les RPU du jour
+- les moyennes et ecarts-type de chaque indicateur
 
-# lecture du fichier de référence des moyennes et ecarts-type
-ref.df <- read.csv("../ref_het_2015.csv")
-# on retire Hus et Mul
-ref.df <- ref.df[-c(9:10),]
-# triage par ordre alphabétique de la 1ere colonne
-ref.df <- ref.df[with(ref.df, order(X)),]
+La procédure qui suit  est formalisée dabns la routine __indicateurs.jour__.
 
+Récupère les données 2016:
+    
 
+<<<<<<< HEAD
 # HET2: nb de RPU par Finess
 h2 <- table(factor(d$FINESS))
+=======
+
+
+```r
+>>>>>>> 875bdd22377bad868e5cd2aed4163f227f03e320
 # indicateur pour la journée
 het2 <- 5 + (h2 - ref.df[,"ref.het2.m"]) / ref.df[,"ref.het2.sd"]
 
@@ -713,24 +713,24 @@ a
 
 ```
 ##     het1     het2     het3     het4     het5
-## 3Fr    5 4.711381 4.689908 4.093813 5.311121
-## Alk    5 5.047273       NA 3.727481       NA
-## Ane    5 5.700904       NA 1.267123       NA
-## Ccm    5 6.041924 4.770418 3.388105      NaN
-## Col    5 4.017688 4.830948 4.687703 4.429558
-## Dia    5 3.703396 5.342694 5.311797 5.341386
-## Dts    5 5.574337       NA 3.501492       NA
-## Emr    5 4.770139 5.254478 4.622951 6.112845
-## Geb    5 4.795510 5.420945 5.875058 7.913342
-## Hag    5 4.408864 5.196004 5.023314 5.952022
-## Hsr    5 6.458764 4.918311 4.687391 6.146430
-## HTP    5 5.334248 5.082007 4.673416 5.460158
-## NHC    5 3.665519 5.354772 5.626672 6.189050
-## Odi    5 4.105643 4.859155 4.447828 4.682992
-## Ros    5 5.099536 4.512582 3.616105 4.506060
-## Sav    5 3.752198 5.314557 5.162157 5.799117
-## Sel    5 4.475910 4.587258 5.089335 4.736627
-## Wis    5 3.842679 4.395277 4.142707 3.670368
+## 3Fr    5 5.947835 4.422145 5.187873 4.183871
+## Alk    5 4.564623 4.262764 4.151651 4.210753
+## Ane    5 4.736707       NA 1.267123       NA
+## Ccm    5       NA       NA       NA       NA
+## Col    5 4.696909 4.751047 3.258661 3.886706
+## Dia    5 2.937602 4.997500 6.205523 6.221992
+## Dts    5 4.302432       NA 3.501492       NA
+## Emr    5 4.259038 4.629877 4.074193 3.638401
+## Geb    5 5.159602 4.556279 4.197124 4.311392
+## Hag    5 6.102857 4.782300 4.134888 4.533703
+## Hsr    5 5.918481 4.993940 4.534439 3.927533
+## HTP    5 5.073595 5.162404 3.249631 3.140337
+## NHC    5 5.149532 5.522342 4.253203 5.366922
+## Odi    5 8.662634 4.690710 4.202958 4.682992
+## Ros    5 3.874906 4.568560 5.627043 4.506060
+## Sav    5 4.526769 4.848208 2.875853 3.327272
+## Sel    5 5.192439 5.172231 5.019128 5.189088
+## Wis    5 4.471283 4.950517 4.654922 4.355842
 ```
 
 ```r
@@ -744,7 +744,98 @@ b <- na2zero(a)
 
 Affichage HET du jour
 ---------------------
-![](indicateurs_files/figure-html/het_JOUR-1.png) ![](indicateurs_files/figure-html/het_JOUR-2.png) 
+![](indicateurs_files/figure-html/het_JOUR-1.png)![](indicateurs_files/figure-html/het_JOUR-2.png)
+
+Utilisation de la routine indicateurs.jour
+------------------------------------------
+
+Récupère les données 2016:
+
+
+Indicateurs pour Sélestat le 10/1/2016:
+
+```r
+# source('~/Documents/Resural/Stat Resural/HET/het.R')
+finess <- "Sel"
+jour <- as.Date("2016-01-10")
+```
+
+Indicateurs du jour
+
+```r
+data <- dx[as.Date(dx$ENTREE) == jour & dx$FINESS == finess,]
+het.jour <- indicateurs.jour(data)
+het.jour
+```
+
+```
+##        HET1        HET2        HET3        HET4        HET5 
+##   0.0000000  88.0000000 182.9500000   0.2045455  22.0000000
+```
+
+
+Récupération des moyennes et sd:
+
+```r
+# lecture du fichier de référence des moyennes et ecarts-type
+ref.df <- read.csv("../ref_het_2015.csv")
+# on retire Hus et Mul
+ref.df <- ref.df[-c(9:10),]
+# triage par ordre alphabétique de la 1ere colonne
+ref.df <- ref.df[with(ref.df, order(X)),]
+# on met comme nom de ligne le contenu de la colonne X, ce qui permet de désigner une ligne par le FINESS de l'établissement.
+rownames(ref.df) <- ref.df$X
+```
+
+Indicateurs normalisés:
+
+```r
+het1 <- 5
+het2 <- 5 + (het.jour["HET2"] - ref.df["Sel","ref.het2.m"]) / ref.df["Sel","ref.het2.sd"]
+het3 <- 5 + (het.jour["HET3"] - ref.df["Sel","ref.het3.m"]) / ref.df["Sel","ref.het3.sd"]
+het4 <- 5 + (het.jour["HET4"] - ref.df["Sel","ref.het4.m"]) / ref.df["Sel","ref.het4.sd"]
+het5 <- 5 + (het.jour["HET5"] - ref.df["Sel","ref.het5.m"]) / ref.df["Sel","ref.het5.sd"]
+a <- cbind(het1, het2, het3, het4, het5)
+a
+```
+
+```
+##      het1     het2     het3     het4     het5
+## HET2    5 5.192439 4.712688 5.019128 12.88092
+```
+
+Graphique
+![](indicateurs_files/figure-html/unnamed-chunk-17-1.png)
+
+Utilisation de la routine  indicateurs.ca.jour
+----------------------------------------------
+
+Meilleure solution. Calcule les indicateurs normalisés et dessine le graphe à partir de 4 éléments:
+
+- un dataframe RPU
+- une date
+- un FINESS
+- le fichier des moyennes et SD de référence
+
+```r
+# source('~/Documents/Resural/Stat Resural/HET/het.R')
+finess <- "Sel"
+jour <- as.Date("2016-01-10")
+a <- indicateurs.ca.jour(dx, finess, jour, "../ref_het_2015.csv")
+a
+```
+
+```
+##      het1     het2     het3     het4     het5
+## HET2    5 5.192439 4.712688 5.019128 12.88092
+```
+
+```r
+radar.het(a, date = paste(finess, "-", format(jour, "%d/%m/%Y")))
+```
+
+![](indicateurs_files/figure-html/unnamed-chunk-18-1.png)
+
 
 
 Test de la fonction het.fr
@@ -760,12 +851,12 @@ head(xt)
 
 ```
 ##            X0 HET2     HET3      HET4 HET5
-## 2015-10-01  0   31 164.6000 0.1612903    0
-## 2015-10-02  0   41 226.3750 0.1951220    3
-## 2015-10-03  0   39 116.5000 0.1794872    1
-## 2015-10-04  0   46 149.3750 0.1739130    1
-## 2015-10-05  0   51 188.3636 0.2156863    1
-## 2015-10-06  0   31 257.1000 0.3548387    3
+## 2016-01-01  0 1525 268.9703 0.1560656   72
+## 2016-01-02  0 1643 276.9419 0.1594644  107
+## 2016-01-03  0 1468 276.8964 0.1532698   79
+## 2016-01-04  0 1487 270.1062 0.1566913   90
+## 2016-01-05  0 1353 284.1355 0.1899483  107
+## 2016-01-06  0 1345 273.5330 0.1732342   91
 ```
 
 A partir de ce dataframe on peut:
@@ -777,8 +868,8 @@ index(head(xt))
 ```
 
 ```
-## [1] "2015-10-01" "2015-10-02" "2015-10-03" "2015-10-04" "2015-10-05"
-## [6] "2015-10-06"
+## [1] "2016-01-01" "2016-01-02" "2016-01-03" "2016-01-04" "2016-01-05"
+## [6] "2016-01-06"
 ```
 
 - tracer la courbe de tendance pour un indicateur
@@ -788,7 +879,7 @@ plot(xt[, "HET2"])
 lines(rollmean(xt[, "HET2"], 7), col = "red", lwd = 3)
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-13-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-21-1.png)
 
 - créer le polygone correspondant après avoir réduit-centré la variable: A FAIRE
 
@@ -806,12 +897,12 @@ head(xt)
 
 ```
 ##            X0     HET2     HET3     HET4     HET5
-## 2015-10-01  5 4.770189 4.861409 4.400482 3.618345
-## 2015-10-02  5 6.114365 5.978744 4.787962 6.295302
-## 2015-10-03  5 5.845530 3.991417 4.608894 4.510664
-## 2015-10-04  5 6.786453 4.586033 4.545052 4.510664
-## 2015-10-05  5 7.458540 5.291226 5.023490 4.510664
-## 2015-10-06  5 4.770189 6.534471 6.617231 6.295302
+## 2016-01-01  5 205.5900 6.749172 4.340642 67.86530
+## 2016-01-02  5 221.4513 6.893354 4.379569 99.09646
+## 2016-01-03  5 197.9282 6.892532 4.308621 74.11153
+## 2016-01-04  5 200.4821 6.769716 4.347809 83.92704
+## 2016-01-05  5 182.4702 7.023466 4.728707 99.09646
+## 2016-01-06  5 181.3948 6.831698 4.537277 84.81936
 ```
 
 ```r
@@ -823,7 +914,7 @@ radar.het(xt[1,])
 ## la condition a une longueur > 1 et seul le premier élément est utilisé
 ```
 
-![](indicateurs_files/figure-html/unnamed-chunk-14-1.png) 
+![](indicateurs_files/figure-html/unnamed-chunk-22-1.png)
 
 
 Indicateurs FEDORU
@@ -843,54 +934,54 @@ while(i < h1+ as.period(dhours(8))){
 ```
 
 ```
-## [1] "15H 0M 0S" "84S"      
-## [1] "15H 10M 0S" "84S"       
-## [1] "15H 20M 0S" "79S"       
-## [1] "15H 30M 0S" "78S"       
-## [1] "15H 40M 0S" "79S"       
-## [1] "15H 50M 0S" "79S"       
-## [1] "15H 60M 0S" "79S"       
-## [1] "15H 70M 0S" "79S"       
-## [1] "15H 80M 0S" "81S"       
-## [1] "15H 90M 0S" "76S"       
-## [1] "15H 100M 0S" "76S"        
-## [1] "15H 110M 0S" "77S"        
-## [1] "15H 120M 0S" "78S"        
-## [1] "15H 130M 0S" "76S"        
-## [1] "15H 140M 0S" "74S"        
-## [1] "15H 150M 0S" "71S"        
-## [1] "15H 160M 0S" "66S"        
-## [1] "15H 170M 0S" "66S"        
-## [1] "15H 180M 0S" "64S"        
-## [1] "15H 190M 0S" "64S"        
-## [1] "15H 200M 0S" "62S"        
-## [1] "15H 210M 0S" "59S"        
-## [1] "15H 220M 0S" "58S"        
-## [1] "15H 230M 0S" "56S"        
-## [1] "15H 240M 0S" "57S"        
-## [1] "15H 250M 0S" "58S"        
-## [1] "15H 260M 0S" "54S"        
-## [1] "15H 270M 0S" "49S"        
-## [1] "15H 280M 0S" "53S"        
-## [1] "15H 290M 0S" "52S"        
-## [1] "15H 300M 0S" "53S"        
-## [1] "15H 310M 0S" "50S"        
-## [1] "15H 320M 0S" "44S"        
-## [1] "15H 330M 0S" "40S"        
-## [1] "15H 340M 0S" "37S"        
-## [1] "15H 350M 0S" "36S"        
-## [1] "15H 360M 0S" "35S"        
-## [1] "15H 370M 0S" "34S"        
-## [1] "15H 380M 0S" "31S"        
-## [1] "15H 390M 0S" "28S"        
-## [1] "15H 400M 0S" "25S"        
-## [1] "15H 410M 0S" "27S"        
-## [1] "15H 420M 0S" "24S"        
-## [1] "15H 430M 0S" "24S"        
+## [1] "15H 0M 0S" "50S"      
+## [1] "15H 10M 0S" "53S"       
+## [1] "15H 20M 0S" "54S"       
+## [1] "15H 30M 0S" "57S"       
+## [1] "15H 40M 0S" "56S"       
+## [1] "15H 50M 0S" "57S"       
+## [1] "15H 60M 0S" "57S"       
+## [1] "15H 70M 0S" "56S"       
+## [1] "15H 80M 0S" "52S"       
+## [1] "15H 90M 0S" "49S"       
+## [1] "15H 100M 0S" "47S"        
+## [1] "15H 110M 0S" "47S"        
+## [1] "15H 120M 0S" "44S"        
+## [1] "15H 130M 0S" "45S"        
+## [1] "15H 140M 0S" "42S"        
+## [1] "15H 150M 0S" "35S"        
+## [1] "15H 160M 0S" "36S"        
+## [1] "15H 170M 0S" "35S"        
+## [1] "15H 180M 0S" "33S"        
+## [1] "15H 190M 0S" "36S"        
+## [1] "15H 200M 0S" "38S"        
+## [1] "15H 210M 0S" "36S"        
+## [1] "15H 220M 0S" "36S"        
+## [1] "15H 230M 0S" "36S"        
+## [1] "15H 240M 0S" "37S"        
+## [1] "15H 250M 0S" "35S"        
+## [1] "15H 260M 0S" "35S"        
+## [1] "15H 270M 0S" "34S"        
+## [1] "15H 280M 0S" "33S"        
+## [1] "15H 290M 0S" "33S"        
+## [1] "15H 300M 0S" "32S"        
+## [1] "15H 310M 0S" "33S"        
+## [1] "15H 320M 0S" "31S"        
+## [1] "15H 330M 0S" "27S"        
+## [1] "15H 340M 0S" "26S"        
+## [1] "15H 350M 0S" "26S"        
+## [1] "15H 360M 0S" "26S"        
+## [1] "15H 370M 0S" "26S"        
+## [1] "15H 380M 0S" "28S"        
+## [1] "15H 390M 0S" "25S"        
+## [1] "15H 400M 0S" "23S"        
+## [1] "15H 410M 0S" "22S"        
+## [1] "15H 420M 0S" "22S"        
+## [1] "15H 430M 0S" "21S"        
 ## [1] "15H 440M 0S" "20S"        
-## [1] "15H 450M 0S" "20S"        
-## [1] "15H 460M 0S" "20S"        
-## [1] "15H 470M 0S" "19S"
+## [1] "15H 450M 0S" "18S"        
+## [1] "15H 460M 0S" "13S"        
+## [1] "15H 470M 0S" "12S"
 ```
 
 
