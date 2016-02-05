@@ -275,6 +275,9 @@ Récupération des données:
 - moyenne des passages: ref.df["FINESS", "indicateur"] ex. ref.df["3Fr","ref.het2.m"]
 
 Données du jour:
+
+La corespondance avec le fichier des moyennes nécessite qu'il ne manque aucun FINESS. Pb avec Ste Anne et ste odile qui ont 1 jour de retard. Faire une routine qui prend en entrée une date et produit en sortie les radars.
+
 ```{r}
 # données du 9/12/2015
 jour <- "2015-12-09"
@@ -342,6 +345,7 @@ Affichage HET du jour
 par(mfrow = c(3, 3), mar = c(1, 1, 1, 0))
 for(i in 1:9){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
 for(i in 10:18){j = paste(row.names(b)[i], jour); radar.het(b[i,], date = j)}
+par(mfrow = c(1, 1), mar = c(1, 1, 1, 0))
 ```
 
 
