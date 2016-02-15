@@ -1,6 +1,6 @@
 ---
 title: "Indicateurs de tensions hospitalières"
-subtitle: "CH Sélestat (Sel)"
+subtitle: "2015 - 2016"
 author: "RESURAL"
 date: "31/01/2016"
 output:
@@ -15,19 +15,20 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, width = 80
 ```
 
 
-Récupération des données
 ```{r, message = FALSE}
 library(Rpu2)
 library(lubridate)
-source('~/Documents/Resural/Stat Resural/HET/het.R')
+source('../het.R')
 
 mean.ref <- read.csv("../HET Alsace 2015/het_mean.csv")
 rownames(mean.ref) <- mean.ref$X
+mean.ref <- mean.ref[order(mean.ref$X),]
 mean.ref <- mean.ref[, -1]
 names(mean.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 
 sd.ref <- read.csv("../HET Alsace 2015/het_sd.csv")
 rownames(sd.ref) <- sd.ref$X
+sd.ref <- sd.ref[order(sd.ref$X),]
 sd.ref <- sd.ref[, -1]
 names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 
@@ -37,28 +38,9 @@ dx <- d16.p
 # calendrier
 cal <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
 
-finess <- "Odi"
-```
+anc <- 2016
 
-Moyennes de référence des indicateurs
--------------------------------------
-
-Sur les graphiques, la valeur moyenne de l'indicateur est marquée par une ligne pointillée VERTE
-Les écarts à la moyenne sont exprimées en écart-type:
-
-- un écart-type: ligne pointillée JAUNE
-- deux écart-type: ligne pointillée ORANGE
-- trois écart-type: ligne pointillée ROUGE
-
-```{r, echo=FALSE, comment=""}
-mean.ref[finess, ]
-# mean.ref
-```
-
-Ecarts-types de référence des indicateurs
--------------------------------------
-```{r, echo=FALSE, comment=""}
-sd.ref[finess, ]
+finess <- "Hag"
 ```
 
 HET1 (nombre de passages)
@@ -68,7 +50,7 @@ indicateur <- "ahet1"
 a <- NULL
 for(i in 1:length(cal)){a[i] = het2(dx, finess, cal[i])}
 
-plot(cal, a, type = "l", main = paste(finess, "- Nombre de RPU par jour"), ylab = "Nb. de patients")
+plot(cal, a, type = "l", main = paste(finess, "- Nombre de RPU par jour"), ylab = "Nb. de patients", xlab = anc)
 
 m <- mean.ref[finess, indicateur]
 sd <- sd.ref[finess, indicateur]
@@ -86,7 +68,7 @@ indicateur <- "ahet2"
 a <- NULL
 for(i in 1:length(cal)){a[i] = ahet2(dx, finess, cal[i])}
 
-plot(cal, a, type = "l", main = paste(finess, "- Patients de 75 ans et plus"), ylab = "Nb. de patients", ylim = c(0,35))
+plot(cal, a, type = "l", main = paste(finess, "- Patients de 75 ans et plus"), ylab = "Nb. de patients", ylim = c(0, max(a) + 10), xlab = anc)
 
 m <- mean.ref[finess, indicateur]
 sd <- sd.ref[finess, indicateur]
@@ -106,6 +88,7 @@ sd <- sd.ref[finess, indicateur]
 # plante si une date est manquante
 z <- unique(as.Date(dx$ENTREE[dx$FINESS == finess]))
 # liste des dates manquantes
+date.manquante <- NULL
 if(setequal(cal, z) == FALSE){
     date.manquante <- as.Date(setdiff(cal, z), origin = "1970-01-01")
 }
@@ -118,7 +101,7 @@ for(i in 1:length(cal)){
         a[i] <- het3(dx, finess, cal[i])
     }
 
-plot(cal, a, type = "l", main = paste(finess, "- Durée moyenne de passage par jour"), ylab = "Temps (minutes)", xlab = "", ylim = c(min(a) - 30, max(a) + 30))
+plot(cal, a, type = "l", main = paste(finess, "- Durée moyenne de passage par jour"), ylab = "Temps (minutes)", xlab = anc,  ylim = c(min(a) - 30, max(a) + 30))
 
 abline(h = m, col = "green", lty = 2)
 abline(h = m + sd, col = "yellow", lty = 2)
@@ -137,7 +120,7 @@ sd <- sd.ref[finess, indicateur]
 a <- NULL
 for(i in 1:length(cal)){a[i] = het4(dx, finess, cal[i])}
 
-plot(cal, a, type = "l", main = paste(finess, "- Taux d'hospitalisation par jour"), ylab = "% hospitalisation", xlab = "", ylim = c(0, 0.5))
+plot(cal, a, type = "l", main = paste(finess, "- Taux d'hospitalisation par jour"), ylab = "% hospitalisation", ylim = c(0, max(a, na.rm = TRUE)), xlab = anc)
 
 abline(h = m, col = "green", lty = 2)
 abline(h = m + sd, col = "yellow", lty = 2)
@@ -169,7 +152,7 @@ for(i in 1:length(cal)){
     }
 
 # Graphe
-plot(cal, a, type = "l", main = paste(finess, "- Charge de soins"), ylab = "Nb. de patients présents à 15 h", ylim = c(0, max(a) + 10))
+plot(cal, a, type = "l", main = paste(finess, "- Charge de soins"), ylab = "Nb. de patients présents à 15 h", ylim = c(0, max(a) + 10), xlab = anc)
 
 m <- mean.ref[finess, indicateur]
 sd <- sd.ref[finess, indicateur]

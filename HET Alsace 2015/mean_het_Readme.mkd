@@ -1,0 +1,4 @@
+Fichiers des moyennes d'indicateurs
+===================================
+
+Les moyennes et écart-type (sd) de référence pour 5 indicateurs sont stockés dans les fichiers __het_mean__ et __het_sd__. Ils sont construits à partir des données de novembre 2014 à octobre 2015 inclu sauf pour HTP et NHC. En effet un bug corrigé à partir de novembre 2015 faisait que les modes de sortie vers le domicile n'étaient pas pris en compte. Il en résulte un taux anormalement élevé d'hospitalisations (> 70%) pour ces deux sites. Pour cette raison, les moyennes de référence pour ces 2 sites et uniquement pour l'indicateur "taux d'hospitalisation" (ahet4) a été corrigé manuellement. Les version de fichier suffixées par _old correspondent à la version non corrigée.

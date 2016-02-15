@@ -43,8 +43,8 @@ Cinq items du RPU sont nécessaires: AGE, DATE_ENTREE, DATE_SORTIE, MODE_SORTIE,
 
 ### Constitution du panel de référence pour le calcul des seuils:
 ```{r, echo=FALSE, eval=FALSE}
-load("~/Documents/Resural/Stat Resural/DATA/RPU_2014/rpu2014d0112_c2.Rda")
-load("~/Documents/Resural/Stat Resural/DATA/RPU_2015/rpu2015d0112.Rda")
+load("../../DATA/RPU_2014/rpu2014d0112_c2.Rda")
+load("../../DATA/RPU_2015/rpu2015d0112.Rda")
 
 dx <- rbind(d14[as.Date(d14$ENTREE) > "2014-10-31", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")], d15[as.Date(d15$ENTREE) < "2015-11-01", c("ENTREE","SORTIE","AGE","MODE_SORTIE","FINESS")])
 
@@ -134,9 +134,9 @@ boxplot(ahet3.moy.jour, las = 2, main = "Durées moyenne de passage")
 # ahet4 - Taux hospitalisation
 # ---------------------------
 
-# On forme un Dataframe de RPU dont le mode de sortie n'est pas nul, appemé ms:
+# On forme un Dataframe de RPU dont le mode de sortie n'est pas nul, appelé ms:
 ms <- dx[!is.na(dx$MODE_SORTIE),]
-summary(ms$MODE_SORTIE)
+summary(as.factor(ms$MODE_SORTIE))
 
 # taux d'hospitalisation par FINESS. dx est un vecteur des modes de sortie (non nuls) pour un établissement donné. 
 # tx.hosp <- function(dx){s = summary(dx);n = length(dx); hosp = s["Mutation"] + s["Transfert"]; tx = hosp/n; return(tx)}
