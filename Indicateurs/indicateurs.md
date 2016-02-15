@@ -671,9 +671,14 @@ La procédure qui suit  est formalisée dabns la routine __indicateurs.jour__.
 Récupère les données 2016:
     
 
+<<<<<<< HEAD
+# HET2: nb de RPU par Finess
+h2 <- table(factor(d$FINESS))
+=======
 
 
 ```r
+>>>>>>> 875bdd22377bad868e5cd2aed4163f227f03e320
 # indicateur pour la journée
 het2 <- 5 + (h2 - ref.df[,"ref.het2.m"]) / ref.df[,"ref.het2.sd"]
 
