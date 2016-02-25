@@ -5,9 +5,9 @@
 #===================================================
 # Routines pour Durée de passage
 
-# nombre de patients présents à une heure précide. Par exemple combien de patients sont présents à 15 heures?
+# nombre de patients présents à une heure précise. Par exemple combien de patients sont présents à 15 heures?
 # Ce sont tous les patients arrivés avant 15 heures et repartis après 15 heures
-# On part d'un dataframe formé de deux colonnes (ENTREE et SORIE) où chaque couple est complet => il faut éliminer les couples
+# On part d'un dataframe formé de deux colonnes (ENTREE et SORTIE) où chaque couple est complet => il faut éliminer les couples
 # incomplets.
 # Nécessite lubridate, Rpu2
 
@@ -22,6 +22,7 @@
 #' @description fabrique à partir d'un dataframe de type RPU, un dataframe de type duree_passage comportant les colonnes suivantes:
 #' date/heure d'entree, date/heure de sortie, durée de passage (en minutes par défaut), l'heure d'entrée (HMS), l'heure de sortie
 #' @usage df.duree.pas(dx, unit = "mins", mintime = 0, maxtime = 3)
+#' @author JcB 2015
 #' @param dx un dataframe de type RPU
 #' @param unit unité de temps. Défaut = mins
 #' @param mintime défaut = 0. Durée de passage minimale

@@ -4,7 +4,9 @@ author: "JcB"
 date: "03/12/2015"
 output:
   html_document:
+    keep_md: yes
     number_sections: yes
+    toc: yes
 ---
 
 ```{r init, echo=FALSE, warning=FALSE}
@@ -184,8 +186,11 @@ dp$present.a.19h <- is.present.at(dp, "19:00:00")
 n.p19 <- tapply(dp$present.a.19h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
 apply(n.p19, 2, mean, na.rm = TRUE)
 ahet5.19 <- apply(n.p19, 2, mean, na.rm = TRUE)
-cor(ahet5.m, ahet5.19)
-plot(ahet5.m, ahet5.19)
+cor.test(ahet5.m, ahet5.19)
+plot(ahet5.m, ahet5.19, main = "Relation entre le nombre de patients présents à 15h et 19h", xlab = "Présents à 15 heures", ylab = "Présents à 19h")
+
+# nombre de patients entrés et présents à 15 h
+
 
 
 # Regroupment des indicapeurs: on forme une matrice des indicateurs moyens et des Finess

@@ -1,0 +1,53 @@
+---
+title: "Durée de passage"
+author: "JcB & Leslie Buisson"
+date: "25/02/2016"
+output: html_document
+---
+
+```{r}
+source("../Indicateurs/duree_passage.R")
+load("../../DATA/RPU_2015/rpu2015d0112.Rda") #d15
+library(lubridate)
+library(Rpu2)
+```
+
+Comparaison Arrivées - patients présents
+=========================================
+
+Exemple de wissembourg.
+
+horaires d'arrivée
+------------------
+```{r}
+wis <- d15[d15$FINESS == "Wis",]
+
+# création d'un dataframe duree_passage
+dp <- df.duree.pas(wis)
+
+# Ajout d'une colonne Heure entière
+dp$Hour <- hour(dp$he)
+
+# graphe des horaires d'arrivée
+barplot(table(dp$Hour), main = "Heures d'arrivée")
+
+```
+
+horaires de présence
+---------------------
+
+Calcul du nombre de patients présents à toutes les heures de la journée
+
+```{r}
+# pour incrémenter d'une heure: hms("15:00:00") + as.period(dhours(1))
+
+h <- hms("00:00:00")
+a <- array(dim = 24)
+for(i in 1:24){
+    n <- is.present.at(dp, h)
+    a[i] <- sum(n)
+    h <- h + as.period(dhours(1))
+}
+a
+```
+
