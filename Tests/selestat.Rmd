@@ -20,20 +20,26 @@ library(Rpu2)
 library(lubridate)
 source('../het.R')
 
+# lecture du fichier des moyennes
 mean.ref <- read.csv("../HET Alsace 2015/het_mean.csv")
 rownames(mean.ref) <- mean.ref$X
 mean.ref <- mean.ref[order(mean.ref$X),]
 mean.ref <- mean.ref[, -1]
 names(mean.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 
+# lectures des ecarts-type de référence
 sd.ref <- read.csv("../HET Alsace 2015/het_sd.csv")
 rownames(sd.ref) <- sd.ref$X
 sd.ref <- sd.ref[order(sd.ref$X),]
 sd.ref <- sd.ref[, -1]
 names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 
+# lecture des données RPU
 load("../../RPU_2016/Data/d16_p.Rda")
 dx <- d16.p
+# Ajout du mois de décembre 2015
+load("../../DATA/RPU_2015/rpu2015d12.Rda") #d12
+dx <- rbind(d12, dx)
 
 # calendrier
 cal <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
