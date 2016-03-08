@@ -274,13 +274,11 @@ Récupération des données:
 
 - moyenne des passages: ref.df["FINESS", "indicateur"] ex. ref.df["3Fr","ref.het2.m"]
 
-<<<<<<< HEAD
+
 Données du jour:
 
 La corespondance avec le fichier des moyennes nécessite qu'il ne manque aucun FINESS. Pb avec Ste Anne et ste odile qui ont 1 jour de retard. Faire une routine qui prend en entrée une date et produit en sortie les radars.
 
-```{r}
-=======
 Indicateurs du jour
 ===================
 
@@ -300,7 +298,6 @@ Récupère les données 2016:
 load("../../RPU_2016/Data/d16_p.Rda")
 dx <- d16.p
 
->>>>>>> 875bdd22377bad868e5cd2aed4163f227f03e320
 # données du 9/12/2015
 jour <- "2016-01-10"
 

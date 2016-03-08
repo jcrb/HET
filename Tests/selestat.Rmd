@@ -1,13 +1,14 @@
 ---
 title: "Indicateurs de tensions hospitalières"
-subtitle: "2015 - 2016"
 author: "RESURAL"
 date: "31/01/2016"
 output:
+  html_document:
+    keep_md: yes
+    toc: yes
   pdf_document:
     toc: yes
-  html_document:
-    toc: yes
+subtitle: 2015 - 2016
 ---
 
 ```{r global_option, include=FALSE}
@@ -35,8 +36,8 @@ sd.ref <- sd.ref[, -1]
 names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 
 # lecture des données RPU
-load("../../RPU_2016/Data/d16_p.Rda")
-dx <- d16.p
+load("../../RPU_2016/Data/rpu2016d0112_provisoire.Rda")
+dx <- d16
 # Ajout du mois de décembre 2015
 load("../../DATA/RPU_2015/rpu2015d12.Rda") #d12
 dx <- rbind(d12, dx)
@@ -46,7 +47,7 @@ cal <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
 
 anc <- 2016
 
-finess <- "Hag"
+finess <- "Col"
 ```
 
 HET1 (nombre de passages)
