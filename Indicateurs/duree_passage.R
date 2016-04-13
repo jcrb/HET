@@ -1,9 +1,4 @@
-#===================================================
-#
-#   df.duree.pas
-#
-#===================================================
-# Routines pour Durée de passage
+
 
 # nombre de patients présents à une heure précise. Par exemple combien de patients sont présents à 15 heures?
 # Ce sont tous les patients arrivés avant 15 heures et repartis après 15 heures
@@ -18,6 +13,12 @@
 #   patients présents à une heure donné sum(is.present.at), ou le nombre de patients présents à une heure donnée pour 
 #   chaque jour de l'année (tapply) puis de tracer le graphe de présence
 
+#===================================================
+#
+#   df.duree.pas.finess
+#
+#===================================================
+# Routines pour Durée de passage
 #' @title Dataframe Durée de passage
 #' @description fabrique à partir d'un dataframe de type RPU, un dataframe de type duree_passage comportant les colonnes suivantes:
 #' date/heure d'entree, date/heure de sortie, durée de passage (en minutes par défaut), l'heure d'entrée (HMS), l'heure de sortie
@@ -32,7 +33,7 @@
 #' @return dataframe de type duree_passage
 #' @examples df <- df.duree.pas(dx)
 
-df.duree.pas <- function(dx, unit = "mins", mintime = 0, maxtime = 3, orientation = TRUE, finess = FALSE){
+df.duree.pas.finess <- function(dx, unit = "mins", mintime = 0, maxtime = 3, orientation = TRUE, finess = FALSE){
     
     if(orientation == TRUE)
         pas <- dx[, c("ENTREE", "SORTIE", "MODE_SORTIE", "ORIENTATION", "AGE")]

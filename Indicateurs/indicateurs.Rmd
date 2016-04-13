@@ -217,8 +217,9 @@ Calcul des moyennes de référence par établissement
 
 La période de référence retenue s'étend du 1er novembre 2014 au 31 octobre 2015
 ```{}
-load("~/Documents/Stat Resural/RPU_2014/rpu2014d0112_c2.Rda")
-load("~/Documents/Stat Resural/RPU_2014/rpu2015d0112_provisoire.Rda")
+load("../DATA/RPU_2014/rpu2014d0112_c2.Rda")
+load("../DATA/RPU_2015/rpu2015d0112.Rda")
+
 d1 <- d14[as.Date(d14$ENTREE) > "2014-10-31",]
 d2 <- d15[as.Date(d15$ENTREE) < "2015-11-01",]
 # combinaison de d1 et d2 crée la période de référence
@@ -449,7 +450,7 @@ radar.het(a, date = paste(finess, "-", format(jour, "%d/%m/%Y")))
 
 
 
-Test de la fonction het.fr
+Test de la fonction het.df
 ==========================
 
 Cette fonction crée un dataframe de type Xts à partir d'un dataframe RPU en extrayant les indicateurs HET. Au final on obtient un dataframe dont chaque ligne correspond à une date et 5 colonnes correspondant au 5 indicateurs:

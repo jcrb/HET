@@ -33,6 +33,7 @@ La réunion du 3/12/2015 à l'ARS à fixé les indicateurs devant être suivis p
 Définitions:
 ------------
 - __Taux d'hospitalisation__: somme MODE_SORTIE = 'Mutation' +  MODE_SORTIE = 'Transfert' / nombre de RPU où le MODE_SORTIE est renseigné.
+
 - __charge d'occupation à 15 heures__: nombre de patients présents à 15 heures / nombre de places d'hébergement de la SU (nb de patients pouvant être installés simultanément dans le service en salle d'examen et en zone d'attente organisée)
 
 Définitions des seuils

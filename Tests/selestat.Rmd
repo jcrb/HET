@@ -34,13 +34,16 @@ rownames(sd.ref) <- sd.ref$X
 sd.ref <- sd.ref[order(sd.ref$X),]
 sd.ref <- sd.ref[, -1]
 names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
+```
 
+
+```{r, message = FALSE}
 # lecture des données RPU
 load("../../RPU_2016/Data/rpu2016d0112_provisoire.Rda")
 dx <- d16
 # Ajout du mois de décembre 2015
-load("../../DATA/RPU_2015/rpu2015d12.Rda") #d12
-dx <- rbind(d12, dx)
+# load("../../DATA/RPU_2015/rpu2015d12.Rda") #d12
+# dx <- rbind(d12, dx)
 
 # calendrier
 cal <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
@@ -167,6 +170,152 @@ abline(h = m, col = "green", lty = 2)
 abline(h = m + sd, col = "yellow", lty = 2)
 abline(h = m + 2 * sd, col = "orange", lty = 2)
 abline(h = m + 3 * sd, col = "red", lty = 2)
+
+```
+
+Calcul des indicateurs par matrice
+==================================
+
+Pour une période donnée (par ex. 3 mois) on peut calculer en une passe la matrice de chaque indicateur pour tous les Finess. On obtient une matrice rectangulaire avec une colonne par finess et une ligne par jour de la période. Ce mode de calcul se révèle être beaucoup plus rapide qu'une boucle for.
+
+On choisit un finess de référence pour les graphiques:
+```{r}
+finess <- "Sel"
+```
+
+On prélèce un dataframe: ici les 3 premiers mois de 2016 pour tous les finess:
+```{r}
+load("../../RPU_2016/Data/rpu2016d0112_provisoire.Rda")
+dx <- d16
+library(xts)
+library(Rpu2)
+
+```
+
+
+HET1:nombre de pasages
+----------------------
+```{r}
+# création de la matrice
+a <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
+
+# récupération desmoyennes et sd
+m <- mean.ref[finess, 1]
+s <- sd.ref[finess, 1]
+
+# transformation en ts
+ats <- xts(a, order.by = as.Date(rownames(a)))
+plot(ats[, finess], main = finess)
+abline(h = m)
+abline(h = m + s, col = "yellow", lty = 2)
+abline(h = m - s, col = "yellow", lty = 2)
+
+# variante centrée réduite
+plot((ats[, finess]-m)/s, main = finess, ylim = c(-3,3))
+
+```
+
+HET2: Plus de 75 ans
+--------------------
+```{r}
+# création de la matrice
+age <- dx[dx$AGE > 74,]
+c <- tapply(as.Date(age$ENTREE), list(as.Date(age$ENTREE), age$FINESS), length)
+
+# récupération des moyennes et sd
+m <- mean.ref[finess, 2]
+s <- sd.ref[finess, 2]
+
+# 
+cts <- xts(c, order.by = as.Date(rownames(c)))
+plot(cts[, finess], main = finess)
+
+# variante centrée réduite
+plot((cts[, finess]-m)/s, main = paste(finess, "- 75 ans et plus"), ylim = c(-3,3))
+abline(h = 0, col = "red")
+```
+
+
+Het3: durée moyenne de passage
+------------------------------
+```{r}
+# création de la matrice
+hosp <- dx[!is.na(dx$MODE_SORTIE), ]
+dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3,finess = TRUE)
+b <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), mean)
+
+# transformation en ts
+bts <- xts(b, order.by = as.Date(rownames(b)))
+plot(bts[, finess], main = paste(finess, "- Durée moyenne de passage"), ylab = "minutes")
+
+# version centrée et réduite
+m <- mean.ref[finess, 3]
+s <- sd.ref[finess, 3]
+plot((bts[, finess]-m)/s, main = finess, ylim = c(-3,3))
+abline(h = 0, col = "red")
+```
+
+### La méthode de normalisation permet de superposer les graphes
+on supperpose HET1 et HET3:
+```{r}
+# HET1
+m <- mean.ref[finess, 1]
+s <- sd.ref[finess, 1]
+plot((ats[, finess]-m)/s, main = finess, ylim = c(-3,3))
+# HET3
+m <- mean.ref[finess, 3]
+s <- sd.ref[finess, 3]
+lines((bts[, finess]-m)/s, main = finess, ylim = c(-3,3), col = "green")
+
+```
+
+HET4: (Taux d'hospitalisation)
+----------------------------- 
+```{r}
+# création de la matrice: 
+# - on récupère la matrice a = nb de RPU par jour et par finess
+# - on crée la matrice des patients hospitalisés = MODE_SORTIE est Mutation ou transfert à partir de hosp créé pour HET3
+hospit <- hosp[hosp$MODE_SORTIE %in% c("Mutation","TRANSFERT"), ]
+d <- tapply(as.Date(hospit$ENTREE), list(as.Date(hospit$ENTREE), hospit$FINESS), length)
+# taux hospitalisation par finess et par jour
+e <- d/a
+
+# transformation en ts
+ets <- xts(e, order.by = as.Date(rownames(e)))
+plot(ets[, finess], main = paste(finess, "- Taux hospitalisation"), ylab = "minutes")
+abline(h = 0, col = "red")
+
+# moyenne et sd
+indicateur <- "ahet4"
+m <- mean.ref[finess, indicateur]
+s <- sd.ref[finess, indicateur]
+
+# Centrage
+plot((ets[, finess]-m)/s, main = finess, ylim = c(-3,3))
+abline(h = 0, col = "red")
+```
+
+HET5: (charge de soins)
+-----------------------
+```{r}
+dp$present.a.15h <- is.present.at(dp)
+# nombre moyen de patients présents à 15h tous les jours
+n.p15 <- tapply(dp$present.a.15h, list(as.Date(dp$ENTREE), dp$FINESS), sum)
+
+# transformation en ts
+npts <- xts(n.p15, order.by = as.Date(rownames(n.p15)))
+plot(npts[, finess], main = paste(finess, "- Charge de soins à 15h"), ylab = "nombre de patients")
+
+# moyenne et sd
+indicateur <- "ahet5"
+m <- mean.ref[finess, indicateur]
+s <- sd.ref[finess, indicateur]
+
+abline(h = m, col = "red")
+
+# Centrage
+plot((npts[, finess]-m)/s, main = finess, ylim = c(-3,3))
+abline(h = 0, col = "red")
 
 ```
 
