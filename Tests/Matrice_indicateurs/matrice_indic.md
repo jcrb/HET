@@ -557,6 +557,7 @@ tension.plot()
 ```
 
 ![](matrice_indic_files/figure-html/het1_t3_2016-1.png)
+
 HET2 régional: plus e 75 ans
 ----------------------------
 

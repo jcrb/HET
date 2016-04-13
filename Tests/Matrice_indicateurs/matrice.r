@@ -31,3 +31,5 @@ all.xts <- function(xts){
         lines(rollmean(xts[,i], 7), col = "blue", lwd = 3)
     }  
 }
+
+
