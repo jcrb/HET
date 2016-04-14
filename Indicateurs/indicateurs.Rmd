@@ -238,7 +238,7 @@ ref.het2.sd <- apply(ref.het2.n, 2, sd, na.rm = TRUE)
 # sélectionne les enregistrements où le MODE_SORTIE correspond à une hospitalisation 
 hosp <- ref[!is.na(ref$MODE_SORTIE) & ref$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
 # durée de passage si hospitalisation
-dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3, finess = TRUE)
+dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3)
 
 # moyenne/sd par FINESS
 ref.het3.m <- tapply(dp$duree , dp$FINESS, mean, na.rm = TRUE)
@@ -326,7 +326,7 @@ het2 <- 5 + (h2 - ref.df[,"ref.het2.m"]) / ref.df[,"ref.het2.sd"]
 # sélectionne les enregistrements où le MODE_SORTIE correspond à une hospitalisation 
 hosp <- d[!is.na(d$MODE_SORTIE) & d$MODE_SORTIE %in% c("Mutation", "Transfert"), ]
 # durée de passage moyenne si hospitalisation par Finess
-dp <- df.duree.pas(hosp, unit = "mins", mintime = 0, maxtime = 3, finess = TRUE)
+dp <- df.duree.pas.finess(hosp, unit = "mins", mintime = 0, maxtime = 3, finess = TRUE)
 h3 <- tapply(dp$duree, dp$FINESS, mean, na.rm = TRUE)
 
 # indicateur pour la journée

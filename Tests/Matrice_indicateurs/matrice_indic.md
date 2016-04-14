@@ -201,7 +201,7 @@ abline(h = 0, col = "red")
 
 ```r
 # sauvegarde de la matrice HET3
-write.csv(c, file = "mat_het3.csv")
+write.csv(b, file = "mat_het3.csv")
 ```
 
 ### La méthode de normalisation permet de superposer les graphes
@@ -609,7 +609,7 @@ e <- d/n.ms
 
 e2 <- (e - m.het4)/s.het4
 e2ts <- xts(e2, order.by = as.Date(names(e2)))
-plot(e2ts, main = "HET4 - Taux d'hospitalisation T4", ylab = "écart-type")
+plot(e2ts, main = "HET4 - Taux d'hospitalisation T3", ylab = "écart-type")
 abline(h = 0, col = "red")
 lines(rollmean(e2ts, 7), col = "blue", lwd = 3)
 

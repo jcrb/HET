@@ -1,0 +1,164 @@
+---
+title: "Radars"
+author: "ARS ZDS Est - JcB"
+date: "14 avril 2016"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+Fichier des moyennes:
+
+```{r, echo=FALSE}
+
+source("../../../het.r")
+library(plotrix)
+
+# lecture du fichier des moyennes
+mean.ref <- read.csv("../../../HET Alsace 2015/het_mean.csv")
+rownames(mean.ref) <- mean.ref$X
+mean.ref <- mean.ref[order(mean.ref$X),]
+mean.ref <- mean.ref[, -1]
+names(mean.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
+# suprimer la ligne Ccm
+mean.ref <- mean.ref[-which(rownames(mean.ref) == "Ccm"),]
+mean.ref <- mean.ref[-which(rownames(mean.ref) == "Hus"),]
+mean.ref <- mean.ref[-which(rownames(mean.ref) == "Mul"),]
+# head(mean.ref)
+
+# lectures des ecarts-type de référence
+sd.ref <- read.csv("../../../HET Alsace 2015/het_sd.csv")
+rownames(sd.ref) <- sd.ref$X
+sd.ref <- sd.ref[order(sd.ref$X),]
+sd.ref <- sd.ref[, -1]
+names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
+# suprimer la ligne Ccm
+sd.ref <- sd.ref[-which(rownames(sd.ref) == "Ccm"),]
+sd.ref <- sd.ref[-which(rownames(sd.ref) == "Hus"),]
+sd.ref <- sd.ref[-which(rownames(sd.ref) == "Mul"),]
+```
+
+```{r, echo=FALSE}
+# renomme les 2 premières colonnes
+rename.het <- function(het){
+    colnames(het)[1:2] <- c("date", "3Fr")
+    # supprime Thann
+    het$Tan <- NULL
+    het$date <- as.Date(het$date)
+    het
+}
+
+# centrage et rduction de la matrice. Retourne un dataframe col = finess et row = 1 ligne par jour de la période
+cr <- function(het, indic){
+    # transposée pour être cohérent avec HET
+    m <- t(mean.ref)
+    s <- t(sd.ref)
+    # on retient les valeurs correspondant à l'indicateur
+    m1 <- m[indic,]
+    s1 <- s[indic,]
+    # fonction de centrage
+    f <- function(x){(x - m1)/s1}
+    # on enlève la colonne date
+    a <- apply(het[, -1], 1, f)
+    # on tranforme list en dataframe et on remet la colonne date
+    a <- data.frame(t(a))
+    a <-cbind(het[,1], a)
+    names(a)[1:2] <- c("Date","3Fr")
+    rownames(a) <- a$Date
+    a$Date <- NULL
+    a
+}
+```
+
+Matrices indicateur 2016
+
+```{r}
+indic = 1
+het <- read.csv(paste0("../mat_het", indic, ".csv"))
+# het <- read.csv(paste0("Tests/Matrice_indicateurs/mat_het", indic, ".csv"))
+het <- rename.het(het)
+cr1 <- cr(het, indic)
+```
+
+```{r}
+indic = 2
+het <- read.csv(paste0("../mat_het", indic, ".csv"))
+# ajout d'une colonne vide pour Hsr
+a <- het[, 1:10]
+a$Hsr <- 0
+het <- cbind(a, het[, 11:18])
+het <- rename.het(het)
+cr2 <- cr(het, indic)
+```
+
+```{r}
+indic = 3
+het <- read.csv(paste0("../mat_het", indic, ".csv"))
+het <- rename.het(het)
+cr3 <- cr(het, indic)
+```
+
+```{r}
+indic = 4
+het <- read.csv(paste0("../mat_het", indic, ".csv"))
+het <- rename.het(het)
+cr4 <- cr(het, indic)
+```
+
+```{r}
+indic = 5
+het <- read.csv(paste0("../mat_het", indic, ".csv"))
+het <- rename.het(het)
+cr5 <- cr(het, indic)
+head(cr5)
+```
+
+une journée
+```{r}
+
+rad <- function(jour, finess, m = 5){
+    xt <- NULL
+    xt[1] <- m + cr1[which(rownames(cr1) == jour), finess]
+    xt[2] <- m + cr2[which(rownames(cr2) == jour), finess]
+    xt[3] <- m + cr3[which(rownames(cr3) == jour), finess]
+    xt[4] <- m + cr4[which(rownames(cr4) == jour), finess]
+    xt[5] <- m + cr5[which(rownames(cr5) == jour), finess]
+    xt[is.na(xt)] <- m # évite les NA qui font planter le graphique
+    xt
+}
+
+jour <- "2016-01-04"
+finess <- "Dia"
+
+n <- seq(as.Date(jour), as.Date(jour) + 10, 1)
+
+xt <- rad(jour, finess)
+xt
+cr1[which(rownames(cr1) == jour), finess]
+radar.het(xt, date = paste(finess, "-", jour))
+
+# for(i in 1:length(n)){
+#     xt <- rad(n[i], finess)
+#     radar.het(xt, date = paste(finess, "-", n[i]))
+# }
+
+# liste des finess
+fin <- names(het)[-1]
+
+# affichage en deux fois
+par(mfrow = c(3, 3), mar = c(1, 1, 1, 0))
+for(i in 1:9){
+    xt <- rad(jour = jour, finess = fin[i])
+    radar.het(xt, date = paste(fin[i], "-", jour))
+}
+
+for(i in 10:length(fin)){
+    xt <- rad(jour = jour, finess = fin[i])
+    radar.het(xt, date = paste(fin[i], "-", jour))
+}
+```
+
+Représentation sous forme de cartes
+-----------------------------------
+
+![carte](/Users/jean-claudebartier/Documents/Resural/Stat Resural/RPU_2013/doc/cartographie/Tensions/carte_tensions_files/figure-html/zp_S04_2015-01-27.png)

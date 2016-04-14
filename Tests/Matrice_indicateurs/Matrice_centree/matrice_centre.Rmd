@@ -39,8 +39,8 @@ mean.ref <- mean.ref[order(mean.ref$X),]
 mean.ref <- mean.ref[, -1]
 names(mean.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 # suprimer la ligne Ccm
-#mean.ref[-which(rownames(mean.ref) == "Ccm"),]
-#mean.ref[-which(rownames(mean.ref) == "Hus"),]
+# mean.ref <- mean.ref[-which(rownames(mean.ref) == "Ccm"),]
+# mean.ref <- mean.ref[-which(rownames(mean.ref) == "Hus"),]
 # head(mean.ref)
 
 # lectures des ecarts-type de référence
@@ -50,8 +50,8 @@ sd.ref <- sd.ref[order(sd.ref$X),]
 sd.ref <- sd.ref[, -1]
 names(sd.ref) <- c("ahet1", "ahet2", "ahet3", "ahet4", "ahet5")
 # suprimer la ligne Ccm
-#sd.ref[-which(rownames(sd.ref) == "Ccm"),]
-#sd.ref[-which(rownames(sd.ref) == "Hus"),]
+# sd.ref <- sd.ref[-which(rownames(sd.ref) == "Ccm"),]
+# sd.ref <- sd.ref[-which(rownames(sd.ref) == "Hus"),]
 ```
 
 ```{r, echo=FALSE}
