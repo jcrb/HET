@@ -5,7 +5,7 @@ date: "25/02/2016"
 output: html_document
 ---
 
-```{r}
+```{r, message=FALSE}
 source("../Indicateurs/duree_passage.R")
 load("../../DATA/RPU_2015/rpu2015d0112.Rda") #d15
 library(lubridate)
@@ -22,8 +22,11 @@ horaires d'arrivée
 ```{r}
 wis <- d15[d15$FINESS == "Wis",]
 
-# création d'un dataframe duree_passage
+# création d'un dataframe duree_passage. Le calcul de la durée de présence se calcule par soustraction de SORTIE - ENTREE => le calcul tient comte des patients restés plus de 24 heures.
 dp <- df.duree.pas(wis)
+
+# dp compte les colonnes suivantes:
+# "ENTREE" "SORTIE" "MODE_SORTIE" "ORIENTATION" "AGE" "duree" "he" "hs" 
 
 # Ajout d'une colonne Heure entière
 dp$Hour <- hour(dp$he)
@@ -37,16 +40,39 @@ horaires de présence
 ---------------------
 
 Calcul du nombre de patients présents à toutes les heures de la journée
+```{r}
+is.present.at2 <- function(dp, heure = "15:00:00"){
+    # présent à 15 heures
+    d <- paste(as.Date(dp$ENTREE), heure)
+    limite1 <- ymd_hms(d) # pour incrémenter d'une heure: hms("15:00:00") + as.period(dhours(1))
+    d <- paste(as.Date(dp$SORTIE), heure)
+    limite2 <- ymd_hms(d)
+    np <- ymd_hms(dp$ENTREE) < limite1 & ymd_hms(dp$SORTIE) > limite1 | ymd_hms(dp$ENTREE) < limite2 & ymd_hms(dp$SORTIE) > limite2
+    np
+}
+```
+
+Cette fonction donne des résultats plus exact car elle tient compte des patients arrivé la veille et encore là le lendemain à l'heure du comptage. Test avec Wissembourg en 2015
+```{r}
+dp$present <- is.present.at(dp)
+dp$presen2t <- is.present.at2(dp)
+a <- dp[dp$presen2t==TRUE & dp$present == FALSE,]
+```
+
+a retourne 33 enregistrements repérés par la fonction is.present.at2 et qui ont en commun une durée de présence > 24 heures. Se plus la trache horaire de 0h est correctement prise en compte.
+
 
 ```{r}
 # pour incrémenter d'une heure: hms("15:00:00") + as.period(dhours(1))
 
-h <- hms("00:00:00")
-a <- array(dim = 24)
-for(i in 1:24){
-    n <- is.present.at(dp, h)
-    a[i] <- sum(n)
-    h <- h + as.period(dhours(1))
+time <- c("00:00:00", "01:00:00", "02:00:00", "03:00:00", "04:00:00", "05:00:00", "06:00:00", "07:00:00", "08:00:00", "09:00:00", "10:00:00", "11:00:00", "12:00:00", "13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00", "18:00:00", "19:00:00", "20:00:00", "21:00:00", "22:00:00", "23:00:00")
+a <- array(dim = c(24,2))
+
+for(i in 1:length(time)){
+    n <- is.present.at2(dp, time[i])
+    a[i,1] <- time[i]
+    a[i,2] <- sum(n)
+    #h <- h + as.period(dhours(1))
 }
 a
 ```

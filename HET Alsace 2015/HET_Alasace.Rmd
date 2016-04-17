@@ -14,7 +14,7 @@ library(lubridate)
 library(xts)
 library(Rpu2)
 
-source("../Indicateurs/duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
+# source("../Indicateurs/duree_passage.R") # si console: source("Indicateurs/duree_passage.R")
 source("../het.R") # si console: source("het.R")
 ```
 
@@ -119,7 +119,7 @@ On applique _apply_ aux colonnes pour calculer la moyenne et SD annuelle par ét
 
 # on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
 
-dp <- df.duree.pas(dx, orientation = FALSE, finess = TRUE)
+dp <- Rpu2::df.duree.pas(dx) #, orientation = FALSE, finess = TRUE
 head(dp)
 # durée de passage moyenne par jour et par Finess
 ahet3.moy.jour <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), mean, na.rm = TRUE)
