@@ -19,7 +19,7 @@ source("../matrice.r")
 Méthodologie
 ============
 
-Evolution des indicateurs de tension au cours du premier trimestre 2016. Pour facikiter les comparaison, les valeurs des indicateurs ont été normalisés selon la procédure suivante:
+Evolution des indicateurs de tension au cours du premier trimestre 2016. Pour faciliter les comparaison, les valeurs des indicateurs ont été normalisés selon la procédure suivante:
 
 - la moyenne et l'écart-type de chaque indicateur et pour chaque établissement ont été calculés sur un échantillon de référence constitué à partir des RPU remontés entre novembre 2014 et novembre 2015.
 - pour chacune des jounées du 1er trimestre 2016, la valeur de chaque indicateur a été calculée en valeur absolue. Par exemple, pour l'indicateur nombre de passages (HET1), on établi le nombre de passages par jour par établissement. A chacun de ces indicateurs, on retranche la valeur moyenne de l'indicateur obtenu pendant la période de réféence et on divise le résultat par l'écart-type de référence.

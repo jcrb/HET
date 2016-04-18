@@ -1,0 +1,41 @@
+---
+title: "HET test"
+author: "ARS ZDS Est - JcB"
+date: "18 avril 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(Rpu2)
+load("../../DATA/RPU_2016/rpu2016d0112.Rda") # d16
+anc <- 2016
+
+dx <- d16
+rm(d16)
+
+dp <- df.duree.pas(dx)
+head(dp)
+
+# durée de passage moyenne par jour et par Finess
+ahet3.moy.jour <- tapply(dp$duree, list(as.Date(dp$ENTREE), dp$FINESS), mean, na.rm = TRUE)
+
+ahet3.m <- apply(ahet3.moy.jour, 2, mean, na.rm=TRUE)
+ahet3.sd <- apply(ahet3.moy.jour, 2, sd, na.rm=TRUE)
+
+# Pour illustrer:
+boxplot(ahet3.moy.jour, las = 2, main = "Durées moyenne de passage")
+
+# idem par ordre croissant de médiane
+s <- sort(apply(ahet3.moy.jour, 2, median, na.rm = T)) # tri des médianes
+d <- ahet3.moy.jour[, names(s)] # réorder des colonnes du dataframe
+boxplot(d, las = 2, main = "Durées moyenne de passage")
+
+# idem par ordre croissant des moyennes
+d <- ahet3.moy.jour[, names(sort(apply(ahet3.moy.jour, 2, mean, na.rm = T)))]
+boxplot(d, las = 2, main = "Durées moyenne de passage")
+```
+
