@@ -59,7 +59,7 @@ dp$presen2t <- is.present.at2(dp)
 a <- dp[dp$presen2t==TRUE & dp$present == FALSE,]
 ```
 
-a retourne 33 enregistrements repérés par la fonction is.present.at2 et qui ont en commun une durée de présence > 24 heures. Se plus la trache horaire de 0h est correctement prise en compte.
+a retourne 33 enregistrements repérés par la fonction is.present.at2 et qui ont en commun une durée de présence > 24 heures. De plus la trache horaire de 0h est correctement prise en compte.
 
 
 ```{r}
