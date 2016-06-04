@@ -1,6 +1,6 @@
 ---
 title: "Durée de passage"
-author: "JcB & Leslie Buisson"
+author: "JcB"
 date: "25/02/2016"
 output: html_document
 ---
@@ -20,7 +20,7 @@ Exemple de wissembourg.
 horaires d'arrivée
 ------------------
 ```{r}
-wis <- d15[d15$FINESS == "Wis",]
+wis <- d15[d15$FINESS == "HTP",]
 
 # création d'un dataframe duree_passage. Le calcul de la durée de présence se calcule par soustraction de SORTIE - ENTREE => le calcul tient comte des patients restés plus de 24 heures.
 dp <- df.duree.pas(wis)
@@ -59,9 +59,7 @@ dp$presen2t <- is.present.at2(dp)
 a <- dp[dp$presen2t==TRUE & dp$present == FALSE,]
 ```
 
-a retourne 33 enregistrements repérés par la fonction is.present.at2 et qui ont en commun une durée de présence > 24 heures. De plus la trache horaire de 0h est correctement prise en compte.
-
-
+_a_ retourne 33 enregistrements repérés par la fonction is.present.at2 et qui ont en commun une durée de présence > 24 heures. De plus la trache horaire de 0h est correctement prise en compte.
 ```{r}
 # pour incrémenter d'une heure: hms("15:00:00") + as.period(dhours(1))
 
@@ -76,4 +74,66 @@ for(i in 1:length(time)){
 }
 a
 ```
+
+
+### Nombre de patients présents à 15h par jour pour Wissembourg en 2015
+
+```{r}
+t <- tapply(as.Date(dp$ENTREE), list(as.Date(dp$ENTREE), dp$presen2t), length)
+head(t)
+```
+On obtient une matrice de 2 colonnes (False, True) et 365 lignes que l'in peut manipuler
+```{r}
+summary(t[,2])
+sd(t[,2], na.rm = T)
+
+plot(as.Date(rownames(t)), t[, 2], type = "l", xlab = "2015", ylab = "Présents à 15 heures", main = "CH de Wissembourg")
+abline(h = mean(t[,2], na.rm = TRUE), col = "red")
+```
+
+#### Transformation en time serie
+```{r}
+library(xts)
+ts <- xts(t[,2], order.by = as.Date(rownames(t)))
+plot(ts)
+# tracé de la moyenne lissée. Comme la série comporte un NA, on ne eut pas utiliser la commande rollmean. O utilise à la place la commande rollapply.
+r <- rollapply(ts, 7, mean, na.rm = T)
+lines(r, col = "blue", lwd = 2)
+
+abline(h = mean(ts, na.rm = TRUE), col = "red")
+```
+
+NOTE: les NApeuvent provenir d'une valeur nulle => remplacer les NA par 0 avant les calculs ?
+
+### Création d'une matrice du nb de patients présents par jour et par heure
+
+```{r}
+time <- c("00:00:00", "01:00:00", "02:00:00", "03:00:00", "04:00:00", "05:00:00", "06:00:00", "07:00:00", "08:00:00", "09:00:00", "10:00:00", "11:00:00", "12:00:00", "13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00", "18:00:00", "19:00:00", "20:00:00", "21:00:00", "22:00:00", "23:00:00")
+
+a <- array(dim = c(365,24))
+
+for(i in 1:length(time)){
+    dp$presen2t <- is.present.at2(dp, time[i])
+    t <- tapply(as.Date(dp$ENTREE), list(as.Date(dp$ENTREE), dp$presen2t), length)
+    a[, i] <- t[, 2]
+}
+
+# nb moyen de patents présents par heure
+m <- apply(a, 2, mean, na.rm = T)
+s <- apply(a, 2, sd, na.rm = T)
+su <- apply(a, 2, summary)
+su
+
+boxplot(a)
+
+# Si on transforme les NA en 0
+a[is.na(a)] <- 0
+su <- apply(a, 2, summary)
+su
+
+boxplot(a)
+
+```
+
+
 
