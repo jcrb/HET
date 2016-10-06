@@ -1,0 +1,29 @@
+---
+title: "Overcrowding"
+author: "ARS ZDS Est - JcB"
+date: "21 avril 2016"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("/Users/jean-claudebartier/Desktop/HET_article")
+d <- read.csv("HET_data_pubmed.csv", skip = 1)
+names(d)
+
+# on retire 2016 ui est incomplète
+d <- d[-1,]
+
+plot(d$ANNEE, d$ED, type = "l", ylim = c(0,170), xlab = "Années", ylab = "nombre d'articles", main = "Publications sur le thème Overcrowding des SU et de l'hôpital\n (source Pubmed)", col = "red", lwd = 3)
+lines(d$ANNEE, d$HOSP, col = "blue", lwd = 3)
+lines(d$ANNEE, d$Total, col = "green", lwd = 3)
+legend("topleft", legend = c("ED overcrowding", "Hospital overcrowding", "Total"), lty = 1, lwd = 3, col = c("red", "blue", "green"), bty = "n")
+
+
+```
+
