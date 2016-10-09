@@ -60,9 +60,15 @@ HET2 - Nombre de passages aux urgences (par jour)
 
 ```{r}
 n.rpu.jour <- tapply(as.Date(dx$ENTREE), day(as.Date(dx$ENTREE)), length)
+# autres formulations:
+# n.rpu.jour <- tapply(as.Date(dx$ENTREE), list(as.Date(dx$ENTREE), dx$FINESS), length)
+# retourne un dataframe avec les dates en clair et les finess. On peut appliquer:
+# a <- apply(n.rpu.jour, 2, summary)
+# on obtient une list que l'on peut transformer en DF avec:
+# b <- do.call(rbind.data.frame, a)
+
 
 # transformation en time serie
-x <- seq(min(as.Date(dx$ENTREE)), max(as.Date(dx$ENTREE)), 1)
 ts.het2 <- xts(n.rpu.jour, order.by = x)
 colnames(ts.het2) <- "HET2"
 
