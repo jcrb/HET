@@ -67,6 +67,7 @@ n.rpu.jour <- tapply(as.Date(dx$ENTREE), day(as.Date(dx$ENTREE)), length)
 # a <- apply(n.rpu.jour, 2, summary)
 # on obtient une list que l'on peut transformer en DF avec:
 # b <- do.call(rbind.data.frame, a)
+# names(b)<- c("min","Q1","Médiane", "Moyenne", "Q3", "max")
 
 
 # transformation en time serie
@@ -155,7 +156,23 @@ ts.n.p15 <- xts(n.p15, x)
 colnames(ts.n.p15) <- "HET5"
 plot(ts.n.p15, main = "Nombre de patients présents au SU à 15 heures")
 
+``` 
+
+HET6 - Nombre de passages de plus de 75 ans par FINESS
+-------------------------------------------
+```{r}
+# population geriatrique
+ger <- dx[dx$AGE > 74, c("ENTREE", "FINESS")]
+# Dataframe nb passages par jour et par Finess
+n.ger.jour <- tapply(as.Date(ger$ENTREE), list(as.Date(ger$ENTREE), ger$FINESS), length) 
+# Summary par FINESS
+ger.summary <- apply(n.ger.jour, 2, summary)
+# TRANSFORMATION EN DF
+ger.df <- do.call(rbind.data.frame, ger.summary)
+names(ger.df)<- c("min","Q1","Médiane", "Moyenne", "Q3", "max")
+
 ```
+
 
 Synthèse
 --------
@@ -353,8 +370,6 @@ h5 <- tapply(dp$present.a.15h, factor(dp$FINESS), sum)
 ```
 
 ```{r}
-
-
 # indicateur pour la journée
 het5 <- 5 + (h5 - ref.df[,"ref.het5.m"]) / ref.df[,"ref.het5.sd"]
 

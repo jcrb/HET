@@ -113,12 +113,12 @@ ahet3 - Durée de passage
 
 On crée un dataframe des durées de passage (Rpu2). Avec tapply, on détermine la durée moyenne de passages par jour et par FINESS. Sur le même principe, on peut calculer une matrice des SD, Median, Min, Max...
 On applique _apply_ aux colonnes pour calculer la moyenne et SD annuelle par établissement.
+
 ```{r}
 # ahet3 - Durée de passage
-# -----------------------
 
 # on crée un dataframe sans la colonne ORIENTATION mais avec la colonne FINESS
-
+library(Rpu2)
 dp <- df.duree.pas(dx)
 ```
 ```{r}
